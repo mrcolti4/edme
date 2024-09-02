@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Category;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +19,14 @@ class CourseFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'name' => fake()->sentence(),
+            'description' => fake()->sentence(),
+            'price' => fake()->numberBetween(100, 1000),
+            'students_limit' => fake()->numberBetween(10, 100),
+            'start_date' => fake()->dateTimeBetween('now'),
+            'end_date' => fake()->dateTimeBetween('now', '+6 month'),
+            'teacher_id' => User::factory()->teacher(),
+            'category_id' => Category::factory(),
         ];
     }
 }
