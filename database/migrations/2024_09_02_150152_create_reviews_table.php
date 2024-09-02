@@ -1,10 +1,8 @@
 <?php
 
-use App\Models\Category;
-use App\Models\Contact;
 use App\Models\Course;
-use App\Models\Profile;
-use App\Models\Teacher;
+use App\Models\Review;
+use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -16,11 +14,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create((new Teacher())->getTable(), function (Blueprint $table) {
+        Schema::create((new Review())->getTable(), function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Profile::class);
-            $table->foreignIdFor(Contact::class);
-            $table->foreignIdFor(Category::class);
+            $table->float("rating");
+            $table->text("comment");
+            $table->foreignIdFor(User::class);
             $table->foreignIdFor(Course::class);
             $table->timestamps();
         });
@@ -31,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists((new Teacher())->getTable());
+        Schema::dropIfExists((new Review())->getTable());
     }
 };
