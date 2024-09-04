@@ -15,7 +15,7 @@ new class extends Component {
     }
 }; ?>
 
-<nav x-data="{ open: window.innerWidth > 768 ? true : false, openForm: false }" class="bg-white border-b border-gray-100">
+<nav x-data="{ open: window.innerWidth > 640 ? true : false, openForm: false }" class="bg-white border-b border-gray-100">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto py-4 px-6 sm:px-6 lg:px-8">
         <div class="max-sm:flex justify-between">
@@ -36,7 +36,7 @@ new class extends Component {
                     x-transition:leave="transition transform ease-in duration-300"
                     x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full">
                     <div class="pb-1 px-5 flex max-sm:flex-col sm:flex sm:items-center ju gap-7"
-                        x-data="{ openSearch: window.innerWidth > 768 ? false : true }">
+                        x-data="{ openSearch: window.innerWidth > 640 ? false : true }">
                         <div class="mt-3 sm:flex items-center gap-5 max-sm:space-y-5 sm:ml-auto">
                             <x-responsive-nav-link :href="route('home')" :active="request()->routeIs('home')" wire:navigate>
                                 {{ __('Home') }}
@@ -90,26 +90,25 @@ new class extends Component {
                                 </form>
                             </div>
                         </div>
-                        <x-button @click="openForm = !openForm" :is-outline="true" class="bg-transparent text-black">Book
-                            today</x-button>
+                        <x-button @click="openForm = !openForm" :is-outline="true"
+                            class="bg-transparent text-black">{{ __('Book today') }}</x-button>
                         <div x-cloak x-show="openForm"
-                            class="absolute bg-white w-full h-full max-sm:-top-20 left-0 bottom-0 right-0 m-0"
-                            x-transition:enter="transition transform ease-out duration-300"
-                            x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0"
-                            x-transition:leave="transition transform ease-in duration-300"
-                            x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full">
-                            <div class="bg-secondary p-9 relative">
-                                <h2 class="font-bold text-3xl pr-5 text-white">Make an Appointment</h2>
-                                <button @click="openForm = false"
-                                    class="absolute top-4 right-4 z-10 text-white hover:text-black transition-all">
-                                    <i class="fa-solid fa-xmark"></i>
-                                </button>
+                            class="fixed bg-black/70 w-full h-full max-sm:top-20 top-0 left-0 bottom-0 right-0 m-0">
+                            <div class="bg-white sm:w-[470px] w-full h-full ml-auto" x-show="openForm"
+                                @click.outside="openForm = false"
+                                x-transition:enter="transition transform ease-out duration-300"
+                                x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0"
+                                x-transition:leave="transition transform ease-in duration-300"
+                                x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full">
+                                <div class="bg-secondary p-9 relative">
+                                    <h2 class="font-bold text-3xl pr-5 text-white">{{ __('Make an Appointment') }}</h2>
+                                    <button @click="openForm = false"
+                                        class="absolute top-4 right-4 z-10 text-white hover:text-black transition-all">
+                                        <i class="fa-solid fa-xmark"></i>
+                                    </button>
+                                </div>
+                                <livewire:booking-form />
                             </div>
-                            <x-form.form action="/" method="POST" class="px-9 mt-9">
-                                <x-button>
-                                    Next
-                                </x-button>
-                            </x-form.form>
                         </div>
                     </div>
                 </div>
