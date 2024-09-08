@@ -18,8 +18,10 @@
 </head>
 
 <body>
-    <livewire:layout.navigation />
-    {{ $slot }}
+    <div id="page" class="font-raleway relative">
+        <livewire:layout.navigation />
+        {{ $slot }}
+    </div>
 </body>
 
 </html>

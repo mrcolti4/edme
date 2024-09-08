@@ -1,4 +1,4 @@
-<x-form.form action="/" method="POST" class="px-9 mt-9 space-y-6">
+<x-form.form action="/" method="POST" class="{{ $class }} px-[50px] pt-[30px] pb-10 grid gap-6 text-primary">
     <x-input-label>
         Category
         <x-form.select options="" class="mt-2 bg-selectCategory" />
@@ -15,7 +15,7 @@
         Teacher
         <x-form.select options="" class="mt-2 bg-selectTeacher" />
     </x-input-label>
-    <x-button class="mt-9 px-10 py-4">
+    <x-button class="mt-9 px-10 py-4 max-w-[50%]">
         Next
     </x-button>
 </x-form.form>

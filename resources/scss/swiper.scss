@@ -1,0 +1,12 @@
+.swiper-pagination-bullet {
+    width: 15px;
+    border-radius: 7px;
+    transition: all 0.3s ease;
+    &:hover {
+        width: 30px;
+    }
+    &.swiper-pagination-bullet-active {
+        background-color: $green;
+        width: 30px;
+    }
+}
