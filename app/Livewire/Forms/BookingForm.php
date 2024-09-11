@@ -2,38 +2,24 @@
 
 namespace App\Livewire\Forms;
 
+use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Validate;
 use Livewire\Form;
 
 class BookingForm extends Form
 {
-    #[Validate]
+    #[Validate('required|exists:App\Models\Category,id')]
+    public string $category = '';
+    #[Validate('required|exists:App\Models\Course,id')]
     public string $course = '';
-    #[Validate]
-    public string $date = '';
+    #[Validate('required|numeric|min:1|max:5')]
+    public string $seats = '';
 
-    public function messages()
+    public function submit()
     {
-        return [
-            'date.after' => 'Date is not in the course range',
-            'date.before' => 'Date is not in the course range',
-        ];
-    }
-
-    public function rules()
-    {
-        return [
-            'course' => ['required', 'exists:App\Models\Course,id'],
-            'date' => [
-                'required',
-                'date_format:Y-m-d',
-                function ($attribute, $value, $fail) {
-                    $course = \App\Models\Course::find($this->course);
-                    if ($course && ($value < $course->start_date || $value > $course->end_date)) {
-                        $fail('Date is out of range');
-                    }
-                },
-            ],
-        ];
+        if (!Auth::user()) {
+            return redirect()->route('login');
+        }
+        $this->validate();
     }
 }

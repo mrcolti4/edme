@@ -73,7 +73,7 @@ new class extends Component {
                                         x-transition:leave="transition opacity ease-in duration-300"
                                         x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
                                         <label class="relative">
-                                            <x-text-input name="search" placeholder="Search..."
+                                            <x-form.input name="search" placeholder="Search..."
                                                 class="rounded-xl pl-7 py-4 w-full" />
                                             <button type="button" @click="openSearch = false"
                                                 class="max-sm:hidden absolute right-0 top-1/2 -translate-y-1/2 w-16 h-16 hover:text-secondary transition-all flex items-center justify-center">
@@ -111,7 +111,7 @@ new class extends Component {
                                             <i class="fa-solid fa-xmark"></i>
                                         </button>
                                     </div>
-                                    <livewire:booking-form />
+                                    <livewire:book-course />
                                 </div>
                             </div>
                         </div>

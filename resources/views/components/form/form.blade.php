@@ -1,4 +1,4 @@
-@props(['action', 'method' => 'GET'])
+@props(['action' => null, 'method' => 'GET'])
 
 <form action="{{ $action }}" method="{{ $method }}" {{ $attributes }}>
     @csrf

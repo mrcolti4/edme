@@ -65,8 +65,8 @@
             <x-section-title class="mb-15 text-white">{{ __('Schedule a Class or Session') }}</x-section-title>
         </div>
         <div class="bg-formBg bg-no-repeat bg-[50%_100px]">
-            <livewire:booking-form
-                class="-mt-[126px] max-w-[577px] bg-white mx-auto rounded-xl border-b-secondary border-b-8" />
+            <livewire:book-course
+                classes="-mt-[126px] max-w-[577px] bg-white mx-auto rounded-xl border-b-secondary border-b-8" />
         </div>
     </section>
     <!-- World class experts -->
