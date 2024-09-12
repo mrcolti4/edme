@@ -29,16 +29,18 @@ new class extends Component {
         <x-form.select wire:model.live="form.category" wire:change="selectCategory($event.target.value)" :options="$categories"
             class="mt-2 bg-selectCategory" />
     </x-form.label>
-    <x-form.label>
-        {{ __('Courses') }}
-        <x-form.select wire:model="courses" :options="$courses" class="mt-2 bg-selectClass" />
-    </x-form.label>
-    <x-form.label>
-        {{ __('Count of seats to book') }}
-        <x-form.input wire:model="form.seats" name="seats" placeholder="3" class="w-full bg-select" type="number"
-            min="1" max="5" />
-    </x-form.label>
-    <x-button type="submit" class="mt-9 px-10 py-4 max-w-[50%]">
-        {{ __('Book course') }}
-    </x-button>
+    @if (count($courses) > 0)
+        <x-form.label>
+            {{ __('Courses') }}
+            <x-form.select wire:model="courses" :options="$courses" class="mt-2 bg-selectClass" />
+        </x-form.label>
+        <x-form.label>
+            {{ __('Count of seats to book') }}
+            <x-form.input wire:model="form.seats" name="seats" placeholder="3" class="w-full bg-select" type="number"
+                min="1" max="5" />
+        </x-form.label>
+        <x-button type="submit" class="mt-9 px-10 py-4 max-w-[50%]">
+            {{ __('Book course') }}
+        </x-button>
+    @endif
 </x-form.form>

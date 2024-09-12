@@ -25,7 +25,6 @@ new class extends Component {
                     <div class="shrink-0 flex items-center">
                         <a class="flex items-center gap-2" href="{{ route('home') }}" wire:navigate>
                             <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
-                            <span class="text-primary uppercase font-bold text-3xl">Edme</span>
                         </a>
                     </div>
 
@@ -42,17 +41,17 @@ new class extends Component {
                                 <x-responsive-nav-link :href="route('home')" :active="request()->routeIs('home')" wire:navigate>
                                     {{ __('Home') }}
                                 </x-responsive-nav-link>
-                                <x-responsive-nav-link :href="route('home')" wire:navigate>
+                                <x-responsive-nav-link :href="route('categories.index')" wire:navigate>
                                     {{ __('Categories') }}
                                 </x-responsive-nav-link>
                                 <x-responsive-nav-link :href="route('home')" wire:navigate>
                                     {{ __('Courses') }}
                                 </x-responsive-nav-link>
                                 <x-responsive-nav-link :href="route('home')" wire:navigate>
-                                    {{ __('Pages') }}
+                                    {{ __('Contact') }}
                                 </x-responsive-nav-link>
                                 <x-responsive-nav-link :href="route('home')" wire:navigate>
-                                    {{ __('Contact') }}
+                                    {{ __('My Profile') }}
                                 </x-responsive-nav-link>
                             </div>
                             <div class="sm:flex relative items-center ">
