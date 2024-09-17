@@ -17,10 +17,10 @@
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap"
         rel="stylesheet">
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/scss/app.scss'])
 </head>
 
-<body class="font-sans antialiased">
+<body x-data="{ lock: false }" :class="lock ? 'overflow-hidden' : ''" class="font-raleway">
     <div class="min-h-screen bg-gray-100">
         <livewire:layout.navigation />
 
@@ -41,6 +41,8 @@
             </div>
             {{ $slot }}
         </main>
+
+        <x-footer.index />
     </div>
 </body>
 

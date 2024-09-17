@@ -20,6 +20,13 @@ class CategoryFactory extends Factory
             'name' => fake()->realText(20),
             'slug' => fake()->slug(),
             'description' => fake()->realTextBetween(100, 200),
+            'image' => fake()->imageUrl(),
         ];
+    }
+    public function onHomepage()
+    {
+        return $this->state(fn(array $attributes) => [
+            'on_homepage' => true,
+        ]);
     }
 }

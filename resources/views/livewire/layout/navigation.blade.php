@@ -30,12 +30,12 @@ new class extends Component {
 
                     <!-- Navigation Links -->
                     <div x-show="open" x-cloak
-                        class="absolute sm:relative w-full max-sm:top-20 left-0 bottom-0 right-0 m-0"
+                        class="absolute sm:relative max-sm:h-screen w-full max-sm:top-28 left-0 bottom-0 right-0 m-0 z-10"
                         x-transition:enter="transition transform ease-out duration-300"
                         x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0"
                         x-transition:leave="transition transform ease-in duration-300"
                         x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full">
-                        <div class="pb-1 px-5 flex max-sm:flex-col sm:flex sm:items-center ju gap-7"
+                        <div class="pb-1 px-5 flex max-sm:flex-col sm:flex sm:items-center max-sm:bg-white max-sm:h-full gap-7"
                             x-data="{ openSearch: window.innerWidth > 640 ? false : true }">
                             <div class="mt-3 sm:flex items-center gap-5 max-sm:space-y-5 sm:ml-auto">
                                 <x-responsive-nav-link :href="route('home')" :active="request()->routeIs('home')" wire:navigate>
@@ -44,7 +44,7 @@ new class extends Component {
                                 <x-responsive-nav-link :href="route('categories.index')" wire:navigate>
                                     {{ __('Categories') }}
                                 </x-responsive-nav-link>
-                                <x-responsive-nav-link :href="route('home')" wire:navigate>
+                                <x-responsive-nav-link :href="route('courses.index')" wire:navigate>
                                     {{ __('Courses') }}
                                 </x-responsive-nav-link>
                                 <x-responsive-nav-link :href="route('home')" wire:navigate>
@@ -119,9 +119,9 @@ new class extends Component {
 
                 <!-- Hamburger -->
                 <div class="-me-2 flex items-center sm:hidden">
-                    <x-button @click="open = ! open"
+                    <x-button @click="open = ! open; lock = !lock"
                         class="font-bold uppercase bg-primary text-white inline-flex items-center justify-center rounded-3xl px-6 py-3 hover:bg-secondary focus:outline-none focus:bg-secondary transition duration-150 ease-in-out">
-                        Menu
+                        {{ __('Menu') }}
                     </x-button>
                 </div>
             </div>

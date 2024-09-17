@@ -18,6 +18,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('description');
+            $table->string("image");
             $table->integer("price");
             $table->integer("students_limit");
             $table->date('start_date');

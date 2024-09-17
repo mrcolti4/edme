@@ -17,7 +17,7 @@
     <title>{{ $title ?? 'Page Title' }}</title>
 </head>
 
-<body>
+<body x-data="{ lock: false }" :class="lock ? 'overflow-hidden' : ''">
     <div id="page" class="font-raleway relative">
         <livewire:layout.navigation />
         {{ $slot }}

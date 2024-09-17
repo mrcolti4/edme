@@ -28,6 +28,11 @@ class User extends Authenticatable
         return $this->hasOne(Contact::class);
     }
 
+    public function teachers()
+    {
+        return $this->where("role", "teacher");
+    }
+
     /**
      * The attributes that are mass assignable.
      *

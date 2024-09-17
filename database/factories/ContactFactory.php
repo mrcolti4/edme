@@ -17,15 +17,16 @@ class ContactFactory extends Factory
      */
     public function definition(): array
     {
+        $socialPlatforms = ["twitter", "instagram", "facebook", "linkedin", "dribbble", "github"];
+        $socialLinks = array_map(function ($platform) {
+            return [
+                "name" => $platform,
+                "url" => "https://{$platform}.com/" . $this->faker->userName(),
+            ];
+        }, $socialPlatforms);
         return [
             "phone" => fake()->phoneNumber(),
-            "social_links" => json_encode([
-                "facebook" => fake()->url(),
-                "twitter" => fake()->url(),
-                "instagram" => fake()->url(),
-                "linkedin" => fake()->url(),
-                "telegram" => fake()->url(),
-            ]),
+            "social_links" => json_encode($socialLinks),
             "user_id" => User::factory()
         ];
     }

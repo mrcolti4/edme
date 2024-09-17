@@ -17,6 +17,8 @@ return new class extends Migration
             $table->string("name");
             $table->string("slug");
             $table->text("description");
+            $table->string("image")->nullable();
+            $table->boolean("on_homepage")->default(0);
             $table->timestamps();
         });
     }
