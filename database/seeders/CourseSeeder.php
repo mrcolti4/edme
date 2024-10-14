@@ -8,7 +8,6 @@ use App\Models\Course;
 use App\Models\Profile;
 use App\Models\Review;
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class CourseSeeder extends Seeder
@@ -19,18 +18,20 @@ class CourseSeeder extends Seeder
     public function run(): void
     {
         $categories = Category::factory()
-            ->count(8)
+            ->count(4)
             ->onHomepage()
             ->create();
-        $categories = Category::factory()
-            ->count(4)
-            ->create();
 
-        for ($i = 1; $i <= 30; $i++) {
+        for ($i = 1; $i <= 15; $i++) {
             $teacher = User::factory()
                 ->has(Profile::factory())
                 ->has(Contact::factory())
                 ->teacher()
+                ->create();
+
+            $user = User::factory()
+                ->has(Profile::factory())
+                ->has(Contact::factory())
                 ->create();
 
             $course = Course::factory()
@@ -39,9 +40,9 @@ class CourseSeeder extends Seeder
                 ->create();
 
             Review::factory()
-                ->for($course)
-                ->for(User::factory())
-                ->count(random_int(0, 5))
+                ->recycle($course)
+                ->recycle($user)
+                ->count(2)
                 ->create();
         }
     }

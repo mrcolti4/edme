@@ -23,10 +23,10 @@
             </div>
         </div>
         <div class="border-t border-light-gray p-5 flex items-center gap-3">
-            <a href="#">
+            <a href="{{ route('teachers.show', ['teacher'=>$course->teacher->id]) }}">
                 <img alt="Teacher image" src="{{ $course->teacher->profile->avatar }}" class="rounded-full w-12 h-12" />
             </a>
-            <a href="#" class="text-primary font-semibold hover:text-secondary transition">
+            <a href="{{ route('teachers.show', ['teacher'=>$course->teacher->id]) }}" class="text-primary font-semibold hover:text-secondary transition">
                 {{ $course->teacher->name }}
             </a>
         </div>

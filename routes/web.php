@@ -17,7 +17,9 @@ Route::name("courses.")->prefix("courses")->group(function () {
     Route::post("/{course}", BookingCourseController::class)->name("book");
 });
 
-Route::name("teachers.")->prefix("teacher")->group(function () {
+Route::name("teachers.")->prefix("teachers")->group(function () {
+    Volt::route("/", "pages.app.teachers.index")->name("index");
+    Volt::route("/{teacher}", "pages.app.teachers.show")->name("show");
 });
 
 require __DIR__ . '/auth.php';

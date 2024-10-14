@@ -6,21 +6,6 @@ use Carbon\Carbon;
 
 trait CourseHelpers
 {
-    private function getAvgRating(): float
-    {
-        $reviews = $this->reviews()->get();
-        $sum = 0;
-        foreach ($reviews as $review) {
-            $sum += $review->rating;
-        }
-
-        return $sum === 0 ? 0 : $sum / $reviews->count();
-    }
-    public function avgRating(): float
-    {
-        return $this->getAvgRating();
-    }
-
     public function studentsLeft(): int
     {
         return $this->students_limit - $this->bookings()->where("is_verified", 1)->count();

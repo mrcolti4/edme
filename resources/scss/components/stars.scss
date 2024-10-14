@@ -5,3 +5,9 @@ div.stars {
         }
     }
 }
+
+.review-bar {
+    &::after {
+        width: var(--width, 0);
+    }
+}

@@ -4,9 +4,19 @@ use Livewire\Volt\Component;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use App\Models\Course;
+use App\Models\Review;
 
 new #[Layout('layouts.app')] #[Title('Course')] class extends Component {
     public Course $course;
+    public $reviews = [];
+
+
+    public function mount()
+    {
+        $this->reviews = Review::with("user.profile")
+            ->where("course_id", $this->course->id)
+            ->get();
+    }
 
     public function getReviews()
     {
@@ -27,13 +37,36 @@ new #[Layout('layouts.app')] #[Title('Course')] class extends Component {
     {
         return $this->course->teacher->contact;
     }
+    private function getAvgRating(): float
+    {
+        $sum = 0;
+        foreach ($this->reviews as $review) {
+            $sum += $review->rating;
+        }
+
+        return $sum === 0 ? 0 : $sum / count($this->reviews);
+    }
+
+    private function getReviewsPercentByNum(float $num): float
+    {
+        $allReviews = count($this->reviews);
+        $reviewsByNum = $this->reviews->filter(function ($review) use ($num) {
+            return $review->rating === $num;
+        });
+        return $reviewsByNum->all() === 0 ? 0 : count($reviewsByNum->all()) / $allReviews * 100;
+    }
+
+    private function avgRating(): float
+    {
+        return $this->getAvgRating();
+    }
 }; ?>
 
 @inject('carbon', 'Carbon\Carbon')
 <section class="pt-[200px] bg-dark-gray">
     <x-container>
         <div class="flex gap-8 ">
-            <div x-data="{ activeTab: 'overview' }" class="w-4/6">
+            <div x-data="{ activeTab: 'reviews' }" class="w-4/6">
                 <ul class="flex items-center border border-gray-300 rounded-xl bg-white mb-6">
                     <x-courses.tab-button x-on:click="activeTab = 'overview'">{{ __('Overview') }}</x-courses.tab-button>
                     <x-courses.tab-button
@@ -67,15 +100,28 @@ new #[Layout('layouts.app')] #[Title('Course')] class extends Component {
                 </div>
                 <!-- Course reviews -->
                 <div x-show="activeTab === 'reviews'">
-                    <div>
-                        <x-section-title green="true">{{ $this->course->avgRating() }}</x-section-title>
-                        <p class="text-lg font-medium">
-                            {{ $this->course->reviews->count() }}
-                            {{ Str::of('review')->plural($this->course->reviews->count()) }}
-                        </p>
-                        <x-courses.stars :rating="3.3" />
+                    <div class="flex gap-6 items-center">
+                        <div class="w-1/4 bg-white border-gray-200 border rounded-xl py-6 px-8 text-center">
+                            <x-section-title green="true">{{$this->getAvgRating()}}</x-section-title>
+                            <p class="text-lg font-medium mt-3">
+                                ({{ $this->course->reviews->count() }}
+                                {{ Str::of('review')->plural($this->course->reviews->count()) }})
+                            </p>
+                            <x-courses.stars :rating="$this->getAvgRating()"/>
+                        </div>
+                        <div class="w-full">
+                            <ul class="grid gap-2">
+                                <x-courses.review-bar rating="5"/>
+                                <x-courses.review-bar rating="4"/>
+                                <x-courses.review-bar rating="3"/>
+                                <x-courses.review-bar rating="2"/>
+                                <x-courses.review-bar rating="1"/>
+                            </ul>
+                        </div>
                     </div>
-                    {{ $this->course->reviews }}
+                    <ul>
+                        <x-courses.reviews.index :reviews="$this->reviews" />
+                    </ul>
                 </div>
             </div>
             <div class="w-2/6 bg-white p-8 relative">
@@ -96,11 +142,18 @@ new #[Layout('layouts.app')] #[Title('Course')] class extends Component {
                         <x-courses.card-text>{{ $this->course->courseDuration() }}</x-courses.card-text>
                     </x-courses.card-item>
                     <li class="flex items-center gap-3 mt-3">
-                        <img src="{{ $this->getTeacherProfile()->avatar }}" alt="{{ $this->getTeacher()->name }}"
-                            width="47" height="47" class="rounded-full w-[47px] h-[47px]" />
+                        <a href="{{ route('teachers.show', ['teacher'=> $this->getTeacher()->id]) }}">
+                            <img
+                                src="{{ $this->getTeacherProfile()->avatar }}"
+                                alt="{{ $this->getTeacher()->name }}"
+                                width="47"
+                                height="47"
+                                class="rounded-full w-[47px] h-[47px]"
+                            />
+                        </a>
                         <div class="grid gap-2">
-                            <p class="font-semibold text-primary text-lg leading-5">{{ $this->getTeacher()->name }}</p>
-                            <p class="text-text font-opensans">Teacher</p>
+                            <a href="{{ route('teachers.show', ['teacher'=> $this->getTeacher()->id]) }}" class="font-semibold text-primary text-lg leading-5 transition hover:text-secondary">{{ $this->getTeacher()->name }}</a>
+                            <p class="text-text font-opensans">{{__('Teacher')}}</p>
                         </div>
                     </li>
                     <li class="mt-3">
@@ -113,13 +166,3 @@ new #[Layout('layouts.app')] #[Title('Course')] class extends Component {
         </div>
     </x-container>
 </section>
-@section('scripts')
-    <script>
-        const stars = document.querySelectorAll('.stars span');
-        const rating = "3.3"
-        stars.forEach((star, index) => {
-            const width = Math.min(Math.max((rating - index) * 100, 0), 100);
-            star.style.setProperty('--width', `${width}%`);
-        });
-    </script>
-@endsection
