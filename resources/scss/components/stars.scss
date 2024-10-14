@@ -1,0 +1,7 @@
+div.stars {
+    span {
+        &::after {
+            width: var(--width, 0);
+        }
+    }
+}

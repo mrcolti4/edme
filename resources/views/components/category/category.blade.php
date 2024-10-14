@@ -4,7 +4,7 @@
         <a href="" class="block mb-2">
             <img src="{{ $category->image }}" alt="{{ $category->name }}" class="max-w-11 max-h-11" />
         </a>
-        <x-link href="#">{{ $category->name }}</x-link>
+        <x-link href="{{ route('categories.show', ['category'=> $category->id]) }}">{{ $category->name }}</x-link>
         <p class="font-opensans leading-7">{{ count($category->courses) . ' ' . __('Courses') }}</p>
     </div>
 </li>

@@ -1,7 +1,8 @@
 <?php
 
 use Livewire\Volt\Component;
-use Livewire\Attributes\{Layout, Title};
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
 use App\Models\Category;
 
 new #[Layout('layouts.app')] #[Title('Hot & Popular Category For Learn')] class extends Component {
@@ -9,7 +10,7 @@ new #[Layout('layouts.app')] #[Title('Hot & Popular Category For Learn')] class 
 
     public function mount()
     {
-        $this->categories = Category::all();
+        $this->categories = Category::has("courses")->get();
     }
 }; ?>
 

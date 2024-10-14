@@ -17,4 +17,7 @@ Route::name("courses.")->prefix("courses")->group(function () {
     Route::post("/{course}", BookingCourseController::class)->name("book");
 });
 
+Route::name("teachers.")->prefix("teacher")->group(function () {
+});
+
 require __DIR__ . '/auth.php';

@@ -113,3 +113,13 @@ new #[Layout('layouts.app')] #[Title('Course')] class extends Component {
         </div>
     </x-container>
 </section>
+@section('scripts')
+    <script>
+        const stars = document.querySelectorAll('.stars span');
+        const rating = "3.3"
+        stars.forEach((star, index) => {
+            const width = Math.min(Math.max((rating - index) * 100, 0), 100);
+            star.style.setProperty('--width', `${width}%`);
+        });
+    </script>
+@endsection

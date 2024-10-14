@@ -44,6 +44,7 @@
 
         <x-footer.index />
     </div>
+    @yield('scripts')
 </body>
 
 </html>
