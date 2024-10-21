@@ -11,6 +11,8 @@
         "livewire/livewire": "^3.4",
         "livewire/volt": "^1.0",
         "spatie/laravel-ignition": "^2.8",
+        "symfony/http-client": "^7.1",
+        "symfony/mailgun-mailer": "^7.1",
         "wireui/breadcrumbs": "^3.1"
     },
     "require-dev": {
