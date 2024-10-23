@@ -65,8 +65,8 @@ new #[Layout('layouts.app')] #[Title('Course')] class extends Component {
 @inject('carbon', 'Carbon\Carbon')
 <section class="pt-[200px] bg-dark-gray">
     <x-container>
-        <div class="flex gap-8 ">
-            <div x-data="{ activeTab: 'reviews' }" class="w-4/6">
+        <div class="flex gap-8">
+            <div x-data="{ activeTab: 'reviews' }" class="w-4/6 px-4">
                 <ul class="flex items-center border border-gray-300 rounded-xl bg-white mb-6">
                     <x-courses.tab-button x-on:click="activeTab = 'overview'">{{ __('Overview') }}</x-courses.tab-button>
                     <x-courses.tab-button
@@ -119,9 +119,10 @@ new #[Layout('layouts.app')] #[Title('Course')] class extends Component {
                             </ul>
                         </div>
                     </div>
-                    <ul>
+                    <ul class="mt-5">
                         <x-courses.reviews.index :reviews="$this->reviews" />
                     </ul>
+                    <livewire:review-form />
                 </div>
             </div>
             <div class="w-2/6 bg-white p-8 relative">
@@ -157,9 +158,7 @@ new #[Layout('layouts.app')] #[Title('Course')] class extends Component {
                         </div>
                     </li>
                     <li class="mt-3">
-                        <x-form.form action="{{ route('courses.book', $course) }}" method="post">
-                            <x-button>{{ __('Buy course') }}</x-button>
-                        </x-form.form>
+                        <x-button tag="a" isOutline="true" href="{{ route('booking.index') }}">{{ __('Buy course') }}</x-button>
                     </li>
                 </ul>
             </div>
