@@ -46,7 +46,7 @@ new #[Layout('layouts.app')] #[Title('Course')] class extends Component {
         }
         $result = $sum / count($this->reviews);
 
-        return $sum === 0 ? 0 : round($result, 2);
+        return $sum === 0 ? 0 : round($result, 1);
     }
 
     private function getReviewsPercentByNum(float $num): float
@@ -57,7 +57,7 @@ new #[Layout('layouts.app')] #[Title('Course')] class extends Component {
         });
         $result = count($reviewsByNum->all()) / $allReviews * 100;
 
-        return $reviewsByNum->all() === 0 ? 0 : round($result, 2);
+        return $reviewsByNum->all() === 0 ? 0 : round($result, 1);
     }
 
     private function avgRating(): float
@@ -132,10 +132,13 @@ new #[Layout('layouts.app')] #[Title('Course')] class extends Component {
                         </div>
                     </div>
                     @cannot('reviewCourse', Auth::user(), $course)
-                    <x-subtitle>{{__("You already left review on this course")}}</x-subtitle>
-                        <x-courses.reviews.show :review="$this->getAuthUserReview()"/>
+                        <x-subtitle class="my-6">{{__("You already left review on this course")}}</x-subtitle>
+                        <livewire:update-review :review="$this->getAuthUserReview()" wire:model="course"/>
                     @endcannot
                     <ul class="my-8">
+                        <li>
+                            <x-subtitle>{{(__("Latest reviews for this course"))}}</x-subtitle>
+                        </li>
                         <x-courses.reviews.index :reviews="$this->reviews" />
                     </ul>
                     @can('reviewCourse', Auth::user(), $course)

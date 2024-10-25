@@ -13,17 +13,4 @@
         </div>
     </div>
     <x-courses.stars :rating="$review->rating"/>
-    @can('update',$review)
-    <div>
-        <!-- TODO: implement update and delete review markup -->
-        <x-form.form action="{{ route('review.update', ['course' => $review->course_id]) }}">
-            <x-button>
-            </x-button>
-        </x-form>
-        <x-form.form action="{{route('review.destroy', ['course' => $review->course_id])}}">
-            <x-button>
-            </x-button>
-        </x-form>
-    </div>
-    @endcan
 </li>

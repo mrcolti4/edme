@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ReviewRequest;
+use App\Models\Course;
 use App\Services\Review\ReviewHandler;
-use Illuminate\Http\Request;
 
 class ReviewController extends Controller
 {

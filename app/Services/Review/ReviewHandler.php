@@ -15,7 +15,7 @@ class ReviewHandler implements ReviewInterface
     public function store(ReviewRequest $request, Course $course): void
     {
         $validatedData = ReviewDTO::getData($request);
-        $review = Review::create([
+        $review = Review::updateOrCreate([
             'course_id' => $course->id,
             'user_id' => $request->user()->id,
             'rating' => $validatedData->rating,
