@@ -11,6 +11,8 @@ class Review extends Model
     use HasFactory;
     protected $table = "reviews";
 
+    protected $guarded = [];
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

@@ -14,6 +14,7 @@ new #[Layout('layouts.app')] #[Title('Course')] class extends Component {
     public function mount()
     {
         $this->reviews = Review::with("user.profile")
+            ->latest()
             ->where("course_id", $this->course->id)
             ->get();
     }
@@ -43,8 +44,9 @@ new #[Layout('layouts.app')] #[Title('Course')] class extends Component {
         foreach ($this->reviews as $review) {
             $sum += $review->rating;
         }
+        $result = $sum / count($this->reviews);
 
-        return $sum === 0 ? 0 : $sum / count($this->reviews);
+        return $sum === 0 ? 0 : round($result, 2);
     }
 
     private function getReviewsPercentByNum(float $num): float
@@ -53,12 +55,22 @@ new #[Layout('layouts.app')] #[Title('Course')] class extends Component {
         $reviewsByNum = $this->reviews->filter(function ($review) use ($num) {
             return $review->rating === $num;
         });
-        return $reviewsByNum->all() === 0 ? 0 : count($reviewsByNum->all()) / $allReviews * 100;
+        $result = count($reviewsByNum->all()) / $allReviews * 100;
+
+        return $reviewsByNum->all() === 0 ? 0 : round($result, 2);
     }
 
     private function avgRating(): float
     {
         return $this->getAvgRating();
+    }
+
+    public function getAuthUserReview(): Review
+    {
+        return $this->course
+                ->reviews
+                ->where("user_id", Auth::user()->id)
+                ->first();
     }
 }; ?>
 
@@ -119,10 +131,16 @@ new #[Layout('layouts.app')] #[Title('Course')] class extends Component {
                             </ul>
                         </div>
                     </div>
-                    <ul class="mt-5">
+                    @cannot('reviewCourse', Auth::user(), $course)
+                    <x-subtitle>{{__("You already left review on this course")}}</x-subtitle>
+                        <x-courses.reviews.show :review="$this->getAuthUserReview()"/>
+                    @endcannot
+                    <ul class="my-8">
                         <x-courses.reviews.index :reviews="$this->reviews" />
                     </ul>
-                    <livewire:review-form />
+                    @can('reviewCourse', Auth::user(), $course)
+                        <livewire:review-form wire:model="course"/>
+                    @endcan
                 </div>
             </div>
             <div class="w-2/6 bg-white p-8 relative">

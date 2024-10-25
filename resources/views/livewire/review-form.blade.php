@@ -1,9 +1,13 @@
 <?php
 
 use Livewire\Volt\Component;
+use Livewire\Attributes\Modelable;
 use App\Models\User;
+use App\Models\Course;
 
 new class extends Component {
+    #[Modelable]
+    public Course $course;
     public string $comment;
     public int $rating;
     public User $user;
@@ -11,9 +15,13 @@ new class extends Component {
     public function mount()
     {
     }
+
+    public function submit()
+    {
+    }
 }; ?>
 
-<x-form.form action="{{ route('review.submit') }}" method="POST" x-data="{ hover: 0 }" class="grid gap-5">
+<x-form.form action="{{ route('review.submit', ['course' => $course->id]) }}" method="POST" x-data="{ hover: 0 }" class="grid gap-5">
     <x-form.label class="grid">
         Your overall rating
         <div>
@@ -32,7 +40,7 @@ new class extends Component {
     </x-form>
     <x-form.label class="grid">
         Your review
-        <x-form.textarea placeholder="Tell people your review"/>
+        <x-form.textarea name="comment" placeholder="Tell people your review"/>
     </x-form>
-    <x-button>Submit your review</x-button>
+    <x-button class="w-[300px]">Submit your review</x-button>
 </x-form.form>

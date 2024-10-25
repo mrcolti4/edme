@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Models\Course;
 use App\Models\Review;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
@@ -13,7 +14,7 @@ class ReviewPolicy
      */
     public function viewAny(User $user): bool
     {
-        //
+        return true;
     }
 
     /**
@@ -29,7 +30,7 @@ class ReviewPolicy
      */
     public function create(User $user): bool
     {
-        //
+        return true;
     }
 
     /**
@@ -37,7 +38,7 @@ class ReviewPolicy
      */
     public function update(User $user, Review $review): bool
     {
-        //
+        return $user->id === $review->user_id;
     }
 
     /**
@@ -45,7 +46,7 @@ class ReviewPolicy
      */
     public function delete(User $user, Review $review): bool
     {
-        //
+        return $user->id === $review->id;
     }
 
     /**
@@ -61,6 +62,11 @@ class ReviewPolicy
      */
     public function forceDelete(User $user, Review $review): bool
     {
-        //
+        return $user->id === $review->id;
+    }
+
+    public function reviewCourse(User $user, Course $course): bool
+    {
+        return $course->review->user_id !== $user->id;
     }
 }

@@ -1,8 +1,11 @@
-@props(['review'])
+@props(['review', 'isAll' => false])
 
-<li class="flex justify-between border-b-gray-400 border-b py-6">
+<li @class([
+    "flex justify-between py-6",
+    "border-b-gray-400 border-b" => $isAll
+])>
     <div class="flex max-md:flex-col gap-3 w-4/5 items-center">
-        <img src="{{$review->user->profile->avatar}}" alt="{{$review->user->name}}" class="rounded-full w-24 h-24"/>
+        <img src="{{$review->user->profile->avatar ?? ''}}" alt="{{$review->user->name}}" class="rounded-full w-24 h-24"/>
         <div class="text-primary space-y-2">
             <h3 class="text-lg font-bold">{{$review->user->name}}</h3>
             <p>{{\Carbon\Carbon::parse($review->created_at)->toFormattedDateString()}}</p>
@@ -10,4 +13,17 @@
         </div>
     </div>
     <x-courses.stars :rating="$review->rating"/>
+    @can('update',$review)
+    <div>
+        <!-- TODO: implement update and delete review markup -->
+        <x-form.form action="{{ route('review.update', ['course' => $review->course_id]) }}">
+            <x-button>
+            </x-button>
+        </x-form>
+        <x-form.form action="{{route('review.destroy', ['course' => $review->course_id])}}">
+            <x-button>
+            </x-button>
+        </x-form>
+    </div>
+    @endcan
 </li>
