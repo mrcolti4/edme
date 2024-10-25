@@ -1,8 +1,8 @@
 <?php
 
 use App\Http\Controllers\BookingCourseController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\VerifyUserController;
-use App\Http\Controllers\SubmitReviewController;
 use Illuminate\Support\Facades\Route;
 use App\Livewire\WelcomePage;
 use Livewire\Volt\Volt;
@@ -35,6 +35,17 @@ Route::group(
     }
 );
 
-Route::post('/submit-review', SubmitReviewController::class)->middleware('auth')->name('review.submit');
+Route::group(
+    [
+        'prefix' => 'review',
+        'as' => 'review.',
+        'middleware' => 'auth'
+    ],
+    function () {
+        Route::post('/submit/{course}', [ReviewController::class, 'store'])->name('submit');
+        Route::post('/update/{course}', [ReviewController::class, 'update'])->name('update');
+        Route::delete('/delete/{course}', [ReviewController::class, 'destroy'])->name('destroy');
+    }
+);
 
 require __DIR__ . '/auth.php';
