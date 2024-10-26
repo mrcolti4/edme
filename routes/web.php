@@ -35,17 +35,4 @@ Route::group(
     }
 );
 
-Route::group(
-    [
-        'prefix' => 'review',
-        'as' => 'review.',
-        'middleware' => 'auth'
-    ],
-    function () {
-        Route::post('/submit/{course}', [ReviewController::class, 'store'])->name('submit');
-        Route::post('/update/{course}', [ReviewController::class, 'update'])->name('update');
-        Route::delete('/delete/{course}', [ReviewController::class, 'destroy'])->name('destroy');
-    }
-);
-
 require __DIR__ . '/auth.php';

@@ -65,12 +65,15 @@ new #[Layout('layouts.app')] #[Title('Course')] class extends Component {
         return $this->getAvgRating();
     }
 
-    public function getAuthUserReview(): Review
+    public function getAuthUserReview(): ?Review
     {
+        if (!auth()->check()) {
+            return null;
+        }
         return $this->course
-                ->reviews
-                ->where("user_id", Auth::user()->id)
-                ->first();
+            ->reviews
+            ->where("user_id", Auth::user()->id)
+            ->first();
     }
 }; ?>
 
@@ -131,9 +134,11 @@ new #[Layout('layouts.app')] #[Title('Course')] class extends Component {
                             </ul>
                         </div>
                     </div>
-                    @cannot('reviewCourse', Auth::user(), $course)
-                        <x-subtitle class="my-6">{{__("You already left review on this course")}}</x-subtitle>
-                        <livewire:update-review :review="$this->getAuthUserReview()" wire:model="course"/>
+                    @cannot('reviewCourse', $course)
+                        @auth
+                            <x-subtitle class="my-6">{{__("You already left review on this course")}}</x-subtitle>
+                            <livewire:update-review :review="$this->getAuthUserReview()" />
+                        @endauth
                     @endcannot
                     <ul class="my-8">
                         <li>
@@ -142,7 +147,7 @@ new #[Layout('layouts.app')] #[Title('Course')] class extends Component {
                         <x-courses.reviews.index :reviews="$this->reviews" />
                     </ul>
                     @can('reviewCourse', Auth::user(), $course)
-                        <livewire:review-form wire:model="course"/>
+                        <livewire:review-form />
                     @endcan
                 </div>
             </div>
@@ -185,4 +190,10 @@ new #[Layout('layouts.app')] #[Title('Course')] class extends Component {
             </div>
         </div>
     </x-container>
+    <!-- Flash messages -->
+    @if(session("status"))
+        <x-action-message status="success">
+            {{session("status")}}
+        </x-action-message>
+    @endif
 </section>

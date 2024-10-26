@@ -1,15 +1,14 @@
 <?php
 
 use Livewire\Volt\Component;
-use Livewire\Attributes\Modelable;
+use App\Livewire\Forms\ReviewForm;
 use App\Models\Review;
 use App\Models\Course;
 
 new class extends Component {
-    #[Modelable]
-    public Course $course;
     public Review $review;
     public bool $isEditing = false;
+    public ReviewForm $form;
 
     public function showForm()
     {
@@ -25,17 +24,19 @@ new class extends Component {
 <div>
     @if ($isEditing)
         <div class="relative">
-            <livewire:review-form wire:model="course" :review="$this->review"/>
+            <livewire:review-form :review="$this->review"/>
             <button wire:click="closeForm" class="absolute top-0 right-0">Close</button>
         </div>
     @else
-        <x-courses.reviews.show :review="$this->review"/>
-        @can('update',$review)
-            <div>
-                <!-- TODO: implement update and delete review markup -->
-                <button wire:click="showForm">Edit</button>
-                <button>Delete</button>
-            </div>
-        @endcan
+        <div class="border border-gray-400 p-2">
+            <x-courses.reviews.show :review="$this->review"/>
+            @can('update', $review)
+                <div>
+                    <!-- TODO: implement update and delete review markup -->
+                    <button wire:click="showForm">Edit</button>
+                    <button>Delete</button>
+                </div>
+            @endcan
+        </div>
     @endif
 </div>

@@ -9,6 +9,10 @@ use Illuminate\Auth\Access\Response;
 
 class ReviewPolicy
 {
+    public function before(User $user): bool
+    {
+        return $user !== null;
+    }
     /**
      * Determine whether the user can view any models.
      */
@@ -67,6 +71,9 @@ class ReviewPolicy
 
     public function reviewCourse(User $user, Course $course): bool
     {
-        return $course->review->user_id !== $user->id;
+        if ($user === null) {
+            return false;
+        }
+        return !$course->reviews()->where('user_id', $user->id)->exsists();
     }
 }
