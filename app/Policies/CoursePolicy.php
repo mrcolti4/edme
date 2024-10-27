@@ -63,4 +63,9 @@ class CoursePolicy
     {
         //
     }
+
+    public function reviewCourse(User $user, Course $course): bool
+    {
+        return !$course->reviews()->where('user_id', $user->id)->exists();
+    }
 }

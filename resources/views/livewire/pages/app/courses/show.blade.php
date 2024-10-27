@@ -3,16 +3,28 @@
 use Livewire\Volt\Component;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
+use App\Livewire\Forms\ReviewForm;
 use App\Models\Course;
 use App\Models\Review;
 
 new #[Layout('layouts.app')] #[Title('Course')] class extends Component {
     public Course $course;
+    public ReviewForm $form;
     public $reviews = [];
+    public ?Review $authUserReview;
+
+    protected $listeners = [
+        "review-event" => "redirectWithSuccess",
+    ];
 
 
     public function mount()
     {
+        $this->form = new ReviewForm($this, "");
+        $this->authUserReview = $this->getAuthUserReview();
+        if ($this->authUserReview !== null) {
+            $this->form->setReview($this->authUserReview);
+        }
         $this->reviews = Review::with("user.profile")
             ->latest()
             ->where("course_id", $this->course->id)
@@ -75,6 +87,21 @@ new #[Layout('layouts.app')] #[Title('Course')] class extends Component {
             ->where("user_id", Auth::user()->id)
             ->first();
     }
+
+    public function deleteReview()
+    {
+        $this->form->destroy();
+
+        // FIX: event dispatch not working, here is directly function call
+        $this->redirectWithSuccess("You did delete your review!");
+    }
+
+    public function redirectWithSuccess(string $message)
+    {
+        session()->flash("status", $message);
+
+        $this->redirectRoute("courses.show", ["course" => $this->course]);
+    }
 }; ?>
 
 @inject('carbon', 'Carbon\Carbon')
@@ -136,8 +163,10 @@ new #[Layout('layouts.app')] #[Title('Course')] class extends Component {
                     </div>
                     @cannot('reviewCourse', $course)
                         @auth
-                            <x-subtitle class="my-6">{{__("You already left review on this course")}}</x-subtitle>
-                            <livewire:update-review :review="$this->getAuthUserReview()" />
+                            @if ($authUserReview)
+                                <x-subtitle class="my-6">{{__("You already left review on this course")}}</x-subtitle>
+                                <livewire:update-review :review="$this->getAuthUserReview()" />
+                            @endif
                         @endauth
                     @endcannot
                     <ul class="my-8">
@@ -146,8 +175,8 @@ new #[Layout('layouts.app')] #[Title('Course')] class extends Component {
                         </li>
                         <x-courses.reviews.index :reviews="$this->reviews" />
                     </ul>
-                    @can('reviewCourse', Auth::user(), $course)
-                        <livewire:review-form />
+                    @can('reviewCourse', $course)
+                        <livewire:review-form :course="$course"/>
                     @endcan
                 </div>
             </div>
@@ -196,4 +225,14 @@ new #[Layout('layouts.app')] #[Title('Course')] class extends Component {
             {{session("status")}}
         </x-action-message>
     @endif
+    <!-- Modal -->
+    <x-modal name="confirm-review-deletion">
+        <x-subtitle>{{__("Are you sure you want to delete your review?")}}</x-subtitle>
+        <div class="flex gap-4 mt-4">
+            <button x-on:click="show = false">{{__("Cancel")}}</button>
+            <form wire:submit.prevent="deleteReview" class="py-4 px-8">
+                    <x-danger-button type="submit">{{__("Yes")}}</x-danger-button>
+            </form>
+        </div>
+    </x-modal>
 </section>

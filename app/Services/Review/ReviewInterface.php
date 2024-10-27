@@ -7,7 +7,7 @@ use App\Models\Course;
 
 interface ReviewInterface
 {
-    public function store(array $data): void;
+    public function store(object $data, Course $course): void;
 
     public function update(array $data): void;
 

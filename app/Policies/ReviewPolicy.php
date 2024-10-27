@@ -5,10 +5,12 @@ namespace App\Policies;
 use App\Models\Course;
 use App\Models\Review;
 use App\Models\User;
+use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Auth\Access\Response;
 
 class ReviewPolicy
 {
+    use HandlesAuthorization;
     public function before(User $user): bool
     {
         return $user !== null;
@@ -67,13 +69,5 @@ class ReviewPolicy
     public function forceDelete(User $user, Review $review): bool
     {
         return $user->id === $review->id;
-    }
-
-    public function reviewCourse(User $user, Course $course): bool
-    {
-        if ($user === null) {
-            return false;
-        }
-        return !$course->reviews()->where('user_id', $user->id)->exsists();
     }
 }

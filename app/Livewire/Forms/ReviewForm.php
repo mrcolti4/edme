@@ -21,7 +21,7 @@ class ReviewForm extends Form implements ReviewInterface
     #[Validate('required|string|min:50|max:500')]
     public string $comment;
 
-    private function getReviewByUserId(array $data, Course $course): Collection
+    public function getReviewByUserId(Course $course)
     {
         return $course->reviews()->where('user_id', Auth::user()->id);
     }
@@ -37,17 +37,24 @@ class ReviewForm extends Form implements ReviewInterface
         $this->course = $review->course;
     }
 
-    public function store(array $data): void
+    public function store(object $data, Course $course): void
     {
-        if ($this->getReviewByUserId($data, $this->course)->exists()) {
+        if ($this->getReviewByUserId($course)->exists()) {
             // TODO: implement error handling for single review per course from single user;
             return;
         }
+        $review = Review::updateOrCreate([
+            'course_id' => $course->id,
+            'user_id' => auth()->user()->id,
+            'rating' => $data->rating,
+            'comment' => $data->comment,
+        ]);
+
     }
 
     public function update($data): void
     {
-        if ($this->review !== null) {
+        if ($this->review === null) {
             // TODO: implement error handling if review not found
             return;
         }
@@ -56,7 +63,8 @@ class ReviewForm extends Form implements ReviewInterface
 
     public function destroy(): void
     {
-        if ($this->review !== null) {
+        if ($this->review === null) {
+            dd("nulled");
             // TODO: implement error handling if review not found
             return;
         }

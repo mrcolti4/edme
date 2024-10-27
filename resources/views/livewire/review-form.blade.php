@@ -5,15 +5,19 @@ use Livewire\Volt\Component;
 use App\Livewire\Forms\ReviewForm;
 use App\Models\User;
 use App\Models\Review;
+use App\Models\Course;
 
 new class extends Component {
-    public Review $review;
+    public ?Review $review = null;
+    public Course $course;
     public User $user;
     public ReviewForm $form;
-    public string $rating;
+    public ?int $rating = null;
 
     public function mount()
     {
+        $this->form = new ReviewForm($this, "");
+        $this->form->rating = 0;
         if ($this->review !== null) {
             $this->rating = $this->review->rating;
             $this->form->setReview($this->review);
@@ -22,22 +26,16 @@ new class extends Component {
 
     public function store()
     {
-        $this->form->store($this->validate());
+        $this->form->store((object) $this->validate(), $this->course);
+
+        $this->dispatch("review-event", message: "You did create review for this course!");
     }
 
     public function update()
     {
         $this->form->update($this->validate());
 
-        $this->dispatch("review-updated");
-    }
-
-    #[On("review-updated")]
-    public function redirectWithSuccess()
-    {
-        session()->flash("status", "Review successfully updated!");
-
-        $this->redirectRoute("courses.show", ["course" => $this->form->course]);
+        $this->dispatch("review-event", message: "You successfully updated your review!");
     }
 }; ?>
 
