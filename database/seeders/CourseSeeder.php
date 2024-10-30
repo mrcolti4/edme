@@ -42,7 +42,7 @@ class CourseSeeder extends Seeder
             Review::factory()
                 ->recycle($course)
                 ->recycle($user)
-                ->count(2)
+                ->count(1)
                 ->create();
         }
     }

@@ -12,6 +12,8 @@ class Profile extends Model
 
     protected $table = 'profiles';
 
+    protected $guarded = [];
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

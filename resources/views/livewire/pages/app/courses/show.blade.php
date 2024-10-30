@@ -213,7 +213,7 @@ new #[Layout('layouts.app')] #[Title('Course')] class extends Component {
                         </div>
                     </li>
                     <li class="mt-3">
-                        <x-button tag="a" isOutline="true" href="{{ route('booking.index') }}">{{ __('Buy course') }}</x-button>
+                        <x-button tag="a" isOutline="true" href="{{ route('booking.show', ['course' => $course]) }}">{{ __('Buy course') }}</x-button>
                     </li>
                 </ul>
             </div>

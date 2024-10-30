@@ -19,6 +19,7 @@ class BookingCourseController extends Controller
             "student_id" => "required|exists:users,id",
             "course_id" => "required|exists:courses,id"
         ]);
+        $request->user()->charge(100, $request->paymentMethodId);
         // Check if course is full
         if (Booking::where("course_id", $course->id)->count() === $course->students_limit) {
             return back()->with("error", "Course is full");

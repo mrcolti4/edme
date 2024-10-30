@@ -92,9 +92,18 @@ new class extends Component {
                                     </form>
                                 </div>
                             </div>
-                            <x-button isOutline="true" tag="a" href="{{ route('login') }}" class="bg-transparent text-black">
-                                {{ __('Book today') }}
-                            </x-button>
+                            @guest
+                                <x-button isOutline="true" tag="a" href="{{ route('login') }}" class="bg-transparent text-black">
+                                    {{ __('Book today') }}
+                                </x-button>
+                            @endguest
+                            @auth
+                                <form wire:submit="logout">
+                                    <x-button type="submit" >
+                                        {{ __('Logout') }}
+                                    </x-button>
+                                </form>
+                            @endauth
                             <div x-cloak x-show="openForm"
                                 class="fixed bg-black/70 w-full h-full max-sm:top-20 top-0 left-0 bottom-0 right-0 m-0 z-20">
                                 <div class="bg-white sm:w-[470px] w-full h-full ml-auto" x-show="openForm"

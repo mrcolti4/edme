@@ -23,15 +23,18 @@ Route::name('teachers.')->prefix('teachers')->group(function () {
     Volt::route('/{teacher}', 'pages.app.teachers.show')->name('show');
 });
 
+Volt::route('/profile', 'pages.app.profile.show')->name('profile.show')->middleware('auth');
+
 Route::group(
     [
         'prefix' => 'booking',
         'as' => 'booking.',
-        'middleware' => 'auth'
     ],
     function () {
-        Volt::route('/', 'pages.app.booking.index')->name('index');
-        Route::post('/{course}', BookingCourseController::class)->name('course');
+        Volt::route('/success', 'pages.app.booking.success')->name('success');
+        Volt::route('/cancel', 'pages.app.booking.cancel')->name('cancel');
+        Volt::route('/{course}', 'pages.app.booking.show')->name('show');
+        Route::post('/{course}', BookingCourseController::class)->name('book');
     }
 );
 

@@ -23,7 +23,6 @@
 </head>
 
 <body class="font-raleway" x-data="{ lock: false }" :class="lock ? 'overflow-hidden' : ''">
-    <livewire:layout.navigation />
     {{$slot}}
 </body>
 @yield('scripts')

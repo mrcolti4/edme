@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use App\Models\Profile;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -29,9 +30,7 @@ new #[Layout('layouts.guest')] class extends Component {
 
         event(new Registered(($user = User::create($validated))));
 
-        Auth::login($user);
-
-        $this->redirect(route('home', absolute: false), navigate: true);
+        $this->redirect(route('register.profile', ['user' => $user], absolute: false), navigate: true);
     }
 }; ?>
 
@@ -80,7 +79,7 @@ new #[Layout('layouts.guest')] class extends Component {
             </a>
 
             <x-primary-button class="ms-4">
-                {{ __('Register') }}
+                {{ __('Continue registration') }}
             </x-primary-button>
         </div>
     </form>

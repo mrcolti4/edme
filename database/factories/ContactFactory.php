@@ -24,6 +24,10 @@ class ContactFactory extends Factory
                 "url" => "https://{$platform}.com/" . $this->faker->userName(),
             ];
         }, $socialPlatforms);
+
+        shuffle($socialLinks);
+
+        $socialLinks = array_slice($socialLinks, 3);
         return [
             "phone" => fake()->phoneNumber(),
             "social_links" => json_encode($socialLinks),
