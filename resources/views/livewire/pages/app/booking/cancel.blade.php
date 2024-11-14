@@ -16,7 +16,7 @@ new #[Layout("layouts.booking")] #[Title("Failed! Something went wrong!")] class
 
     public function backToHome()
     {
-            $this->redirect(route("home"));
+        $this->redirect(route("home"));
     }
 }; ?>
 

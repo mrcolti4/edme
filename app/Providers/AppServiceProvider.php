@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-use App\Mail\ConfirmedSignUp;
 use App\Models\User;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -26,7 +25,7 @@ class AppServiceProvider extends ServiceProvider
     {
         Cashier::useCustomerModel(User::class);
         VerifyEmail::toMailUsing(function (object $notifiable, string $url) {
-            return (new MailMessage())
+            return (new MailMessage)
                 ->subject('Verify your email address')
                 ->view('mail.confirmed-sign-up', ['url' => $url]);
         });

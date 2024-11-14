@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -12,9 +11,9 @@ use Laravel\Cashier\Billable;
 
 class User extends Authenticatable
 {
+    use Billable;
     use HasFactory;
     use Notifiable;
-    use Billable;
 
     public function profile(): HasOne
     {
@@ -33,7 +32,7 @@ class User extends Authenticatable
 
     public function teachers()
     {
-        return $this->where("role", "teacher");
+        return $this->where('role', 'teacher');
     }
 
     /**
