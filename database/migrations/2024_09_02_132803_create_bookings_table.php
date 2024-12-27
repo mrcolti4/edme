@@ -16,8 +16,9 @@ return new class extends Migration
     {
         Schema::create((new Booking())->getTable(), function (Blueprint $table) {
             $table->id();
-            $table->boolean("is_verified")->default(false);
-            $table->foreignIdFor(User::class, "student_id");
+            $table->string('status')->default('pending');
+            $table->string('session_id');
+            $table->foreignIdFor(User::class, "user_id");
             $table->foreignIdFor(Course::class);
             $table->timestamps();
         });

@@ -1,8 +1,6 @@
 <?php
 
-use App\Http\Controllers\BookingCourseController;
-use App\Http\Controllers\ReviewController;
-use App\Http\Controllers\VerifyUserController;
+use App\Http\Controllers\BookController;
 use Illuminate\Support\Facades\Route;
 use App\Livewire\WelcomePage;
 use Livewire\Volt\Volt;
@@ -31,10 +29,10 @@ Route::group(
         'as' => 'booking.',
     ],
     function () {
-        Volt::route('/success', 'pages.app.booking.success')->name('success');
+        Route::get('/success', [BookController::class, 'checkoutSuccess'])->name('success');
         Volt::route('/cancel', 'pages.app.booking.cancel')->name('cancel');
         Volt::route('/{course}', 'pages.app.booking.show')->name('show');
-        Route::post('/{course}', BookingCourseController::class)->name('book');
+        Route::post('/{course}', [BookController::class, 'book'])->name('book');
     }
 );
 

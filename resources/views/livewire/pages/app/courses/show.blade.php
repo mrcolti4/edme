@@ -88,6 +88,14 @@ new #[Layout('layouts.app')] #[Title('Course')] class extends Component {
             ->first();
     }
 
+    public function isUserBookedCourse(): bool
+    {
+        if (null === Auth::user()) {
+            return false;
+        }
+        return $this->course->bookings->where('user_id', Auth::user()->id)->isNotEmpty();
+    }
+
     public function deleteReview()
     {
         $this->form->destroy();
@@ -213,7 +221,17 @@ new #[Layout('layouts.app')] #[Title('Course')] class extends Component {
                         </div>
                     </li>
                     <li class="mt-3">
-                        <x-button tag="a" isOutline="true" href="{{ route('booking.show', ['course' => $course]) }}">{{ __('Buy course') }}</x-button>
+                        @if ($this->isUserBookedCourse())
+                            <div>
+                                {{__("You already booked this course")}}
+                            </div>
+                        @else
+                            <x-form.form method="POST" action="{{route('booking.book', ['course' => $course])}}">
+                                <x-button isOutline="true">
+                                    {{ __('Buy course') }}
+                                </x-button>
+                            </x-form.form>
+                        @endif
                     </li>
                 </ul>
             </div>
@@ -223,6 +241,11 @@ new #[Layout('layouts.app')] #[Title('Course')] class extends Component {
     @if(session("status"))
         <x-action-message status="success">
             {{session("status")}}
+        </x-action-message>
+    @endif
+    @if(session('error'))
+        <x-action-message status="error">
+            {{session('error')}}
         </x-action-message>
     @endif
     <!-- Modal -->

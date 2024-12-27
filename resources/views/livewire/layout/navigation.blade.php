@@ -15,29 +15,29 @@ new class extends Component {
     }
 }; ?>
 
-<header class="py-11 absolute t-0 l-0 w-full">
+<header class="absolute w-full py-11 t-0 l-0">
     <nav x-data="{ open: window.innerWidth > 640 ? true : false, openForm: false }">
         <!-- Primary Navigation Menu -->
         <div class="max-w-[1600px] mx-auto py-4 px-6 sm:px-6 lg:px-8">
-            <div class="max-sm:flex justify-between">
+            <div class="justify-between max-sm:flex">
                 <div class="flex justify-between">
                     <!-- Logo -->
-                    <div class="shrink-0 flex items-center">
+                    <div class="flex items-center shrink-0">
                         <a class="flex items-center gap-2" href="{{ route('home') }}" wire:navigate>
-                            <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
+                            <x-application-logo class="block w-auto text-gray-800 fill-current h-9" />
                         </a>
                     </div>
 
                     <!-- Navigation Links -->
                     <div x-show="open" x-cloak
-                        class="absolute sm:relative max-sm:h-screen w-full max-sm:top-28 left-0 bottom-0 right-0 m-0 z-10"
+                        class="absolute bottom-0 left-0 right-0 z-10 w-full m-0 sm:relative max-sm:h-screen max-sm:top-28"
                         x-transition:enter="transition transform ease-out duration-300"
                         x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0"
                         x-transition:leave="transition transform ease-in duration-300"
                         x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full">
-                        <div class="pb-1 px-5 flex max-sm:flex-col sm:flex sm:items-center max-sm:bg-white max-sm:h-full gap-7"
+                        <div class="flex px-5 pb-1 max-sm:flex-col sm:flex sm:items-center max-sm:bg-white max-sm:h-full gap-7"
                             x-data="{ openSearch: window.innerWidth > 640 ? false : true }">
-                            <div class="mt-3 sm:flex items-center gap-5 max-sm:space-y-5 sm:ml-auto">
+                            <div class="items-center gap-5 mt-3 sm:flex max-sm:space-y-5 sm:ml-auto">
                                 <x-responsive-nav-link :href="route('home')" :active="request()->routeIs('home')" wire:navigate>
                                     {{ __('Home') }}
                                 </x-responsive-nav-link>
@@ -50,11 +50,11 @@ new class extends Component {
                                 <x-responsive-nav-link :href="route('home')" wire:navigate>
                                     {{ __('Contact') }}
                                 </x-responsive-nav-link>
-                                <x-responsive-nav-link :href="route('home')" wire:navigate>
+                                <x-responsive-nav-link :href="route('profile.show')" wire:navigate>
                                     {{ __('My Profile') }}
                                 </x-responsive-nav-link>
                             </div>
-                            <div class="sm:flex relative items-center ">
+                            <div class="relative items-center sm:flex ">
                                 <button class="max-sm:hidden" @click="openSearch = !openSearch">
                                     <svg fill="currentColor" width="22" height="22" viewBox="0 0 22 22"
                                         fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -63,7 +63,7 @@ new class extends Component {
                                         </path>
                                     </svg>
                                 </button>
-                                <div class="sm:absolute top-1/2 sm:-translate-y-1/2 right-0 w-full">
+                                <div class="right-0 w-full sm:absolute top-1/2 sm:-translate-y-1/2">
                                     <form
                                         class="sm:absolute top-1/2 sm:-translate-y-1/2 -right-4 max-w-[750px] sm:w-[100vw]"
                                         x-show="openSearch"
@@ -73,13 +73,13 @@ new class extends Component {
                                         x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
                                         <label class="relative">
                                             <x-form.input name="search" placeholder="Search..."
-                                                class="rounded-xl pl-7 py-4 w-full" />
+                                                class="w-full py-4 rounded-xl pl-7" />
                                             <button type="button" @click="openSearch = false"
-                                                class="max-sm:hidden absolute right-0 top-1/2 -translate-y-1/2 w-16 h-16 hover:text-secondary transition-all flex items-center justify-center">
+                                                class="absolute right-0 flex items-center justify-center w-16 h-16 transition-all -translate-y-1/2 max-sm:hidden top-1/2 hover:text-secondary">
                                                 <i class="fa-solid fa-xmark text-[22px]"></i>
                                             </button>
                                             <button type="submit"
-                                                class="absolute right-2 sm:right-12 top-1/2 -translate-y-1/2 w-16 h-16 flex items-center justify-center hover:text-secondary transition-all">
+                                                class="absolute flex items-center justify-center w-16 h-16 transition-all -translate-y-1/2 right-2 sm:right-12 top-1/2 hover:text-secondary">
                                                 <svg fill="currentColor" width="22" height="22"
                                                     viewBox="0 0 22 22" fill="none"
                                                     xmlns="http://www.w3.org/2000/svg">
@@ -93,7 +93,7 @@ new class extends Component {
                                 </div>
                             </div>
                             @guest
-                                <x-button isOutline="true" tag="a" href="{{ route('login') }}" class="bg-transparent text-black">
+                                <x-button isOutline="true" tag="a" href="{{ route('login') }}" class="text-black bg-transparent">
                                     {{ __('Book today') }}
                                 </x-button>
                             @endguest
@@ -105,18 +105,18 @@ new class extends Component {
                                 </form>
                             @endauth
                             <div x-cloak x-show="openForm"
-                                class="fixed bg-black/70 w-full h-full max-sm:top-20 top-0 left-0 bottom-0 right-0 m-0 z-20">
+                                class="fixed top-0 bottom-0 left-0 right-0 z-20 w-full h-full m-0 bg-black/70 max-sm:top-20">
                                 <div class="bg-white sm:w-[470px] w-full h-full ml-auto" x-show="openForm"
                                     @click.outside="openForm = false"
                                     x-transition:enter="transition transform ease-out duration-300"
                                     x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0"
                                     x-transition:leave="transition transform ease-in duration-300"
                                     x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full">
-                                    <div class="bg-secondary p-9 relative">
-                                        <h2 class="font-bold text-3xl pr-5 text-white">{{ __('Make an Appointment') }}
+                                    <div class="relative bg-secondary p-9">
+                                        <h2 class="pr-5 text-3xl font-bold text-white">{{ __('Make an Appointment') }}
                                         </h2>
                                         <button @click="openForm = false"
-                                            class="absolute top-4 right-4 z-10 text-white hover:text-black transition-all">
+                                            class="absolute z-10 text-white transition-all top-4 right-4 hover:text-black">
                                             <i class="fa-solid fa-xmark"></i>
                                         </button>
                                     </div>
@@ -128,9 +128,9 @@ new class extends Component {
                 </div>
 
                 <!-- Hamburger -->
-                <div class="-me-2 flex items-center sm:hidden">
+                <div class="flex items-center -me-2 sm:hidden">
                     <x-button @click="open = ! open; lock = !lock"
-                        class="font-bold uppercase bg-primary text-white inline-flex items-center justify-center rounded-3xl px-6 py-3 hover:bg-secondary focus:outline-none focus:bg-secondary transition duration-150 ease-in-out">
+                        class="inline-flex items-center justify-center px-6 py-3 font-bold text-white uppercase transition duration-150 ease-in-out bg-primary rounded-3xl hover:bg-secondary focus:outline-none focus:bg-secondary">
                         {{ __('Menu') }}
                     </x-button>
                 </div>
