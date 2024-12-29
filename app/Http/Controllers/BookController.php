@@ -2,18 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\PaymentFailed;
 use App\Models\Booking;
 use App\Models\Course;
+use App\Services\Stripe\StripeService;
 use Illuminate\Http\Request;
-use Stripe\Checkout\Session;
-use Stripe\Stripe;
 
 class BookController extends Controller
 {
-    public function __construct()
-    {
-        Stripe::setApiKey(env('STRIPE_SECRET'));
-    }
+    public function __construct(
+        private StripeService $stripeService,
+    ) {}
 
     public function book(Request $request, Course $course)
     {
@@ -25,26 +24,9 @@ class BookController extends Controller
         if (Booking::where("user_id", $request->user()->id)->where("course_id", $course->id)->exists()) {
             return back()->with("error", "You have already booked this course");
         }
-        $session = Session::create([
-            "line_items" => [
-                [
-                    "price_data" => [
-                        "currency" => "usd",
-                        "product_data" => [
-                            "name" => $course->name,
-                        ],
-                        "unit_amount" => $course->price * 100,
-                    ],
-                    "quantity" => 1,
-                ],
-            ],
-            "mode" => "payment",
-            "success_url" => route("booking.success") . '?session_id={CHECKOUT_SESSION_ID}',
-            "cancel_url" => route("booking.cancel"),
-            "customer_email" => $request->user()->email,
-            'metadata' => ['course_id' => $course->id, 'user_id' => auth()->id()],
-        ]);
         
+        $session = $this->stripeService->createCheckoutSession($course);
+
         // Book the course
         Booking::create([
             "user_id" => $request->user()->id,
@@ -59,11 +41,12 @@ class BookController extends Controller
     {
         $sessionId = $request->query('session_id');
 
-        $checkoutSession = Session::retrieve($sessionId);
-        if ($checkoutSession->payment_status == 'paid') {
-            $booking = Booking::where('session_id', $sessionId)->first();
-            $booking->update(['status' => 'paid']);
-            return redirect(env('APP_URL'));
+        try {
+            $receipt = $this->stripeService->validateCheckoutSession($sessionId);
+        } catch (PaymentFailed $e) {
+            return redirect(route("booking.cancel"));
         }
+
+        return redirect(route("booking.success-page"))->with("receipt", json_encode($receipt));
     }
 }

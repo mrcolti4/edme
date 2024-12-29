@@ -30,9 +30,10 @@ Route::group(
     ],
     function () {
         Route::get('/success', [BookController::class, 'checkoutSuccess'])->name('success');
+        Route::post('/{course}', [BookController::class, 'book'])->name('book');
+        Volt::route('/success-page', 'pages.app.booking.success')->name('success-page');
         Volt::route('/cancel', 'pages.app.booking.cancel')->name('cancel');
         Volt::route('/{course}', 'pages.app.booking.show')->name('show');
-        Route::post('/{course}', [BookController::class, 'book'])->name('book');
     }
 );
 
