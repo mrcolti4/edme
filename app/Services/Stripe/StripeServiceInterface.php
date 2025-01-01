@@ -13,4 +13,8 @@ interface StripeServiceInterface
     public function validateCheckoutSession(string $sessionId): ?array;
     
     public function getCustomerCards(string $customerId);
+
+    public function createPromotionCode(array $params): void;
+
+    public function createCoupon(array $params): void;
 }

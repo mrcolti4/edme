@@ -10,6 +10,8 @@ use Stripe\Checkout\Session;
 use Stripe\Customer;
 use Stripe\PaymentIntent;
 use Stripe\Stripe;
+use Stripe\Coupon;
+use Stripe\PromotionCode;
 
 // TODO: save only one card after checkout, without duplicates
 class StripeService implements StripeServiceInterface
@@ -85,6 +87,22 @@ class StripeService implements StripeServiceInterface
         return $customer;
     }
 
+    public function createPromotionCode(array $params): void {        
+        /*
+        For first time transaction for all users
+        [
+            'coupon' => $couponId,
+            'restrictions' => [
+                'first_time_transaction' => true
+            ]
+        ]
+        */
+        PromotionCode::create($params);
+    }
+
+    public function createCoupon(array $params): void {
+        Coupon::create($params);
+    }
     private function updateStatusInDb(string $sessionId): void {
         $booking = Booking::where('session_id', $sessionId)->first();
         $booking->update(['status' => 'paid']);
