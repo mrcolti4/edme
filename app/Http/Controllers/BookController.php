@@ -32,6 +32,7 @@ class BookController extends Controller
             "user_id" => $request->user()->id,
             "course_id" => $course->id,
             "session_id" => $session->id,
+            "price" => $course->price,
             "status" => "pending",
         ]);
         return redirect($session->url);

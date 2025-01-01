@@ -22,7 +22,7 @@ class CourseFactory extends Factory
             'name' => fake()->sentence(),
             'description' => fake()->sentence(),
             'price' => fake()->numberBetween(100, 1000),
-            'image' => fake()->image(),
+            'image' => fake()->imageUrl(),
             'students_limit' => fake()->numberBetween(10, 100),
             'start_date' => fake()->dateTimeBetween('now'),
             'end_date' => fake()->dateTimeBetween('now', '+6 month'),

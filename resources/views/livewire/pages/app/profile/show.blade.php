@@ -68,20 +68,8 @@ new #[Layout('layouts.app')] #[Title('My profile')] class extends Component {
                         </x-form.form>
                     </section>
                     <section class="" x-show="activeTab === 'courses'">
-                        <x-subtitle>{{__("Booked courses")}}</x-subtitle>
-                        <ul>
-                            @forelse ($this->user->bookings as $booking)
-                                <li class="mt-3">
-                                    <a href="{{ route('courses.show', ['course' => $booking->course_id]) }}">
-                                        {{ $booking->course->name }}
-                                    </a>
-                                </li>
-                            @empty
-                                <li class="mt-3">
-                                    {{__("You haven't booked any courses yet")}}
-                                </li>
-                            @endforelse
-                        </ul>
+                        <x-subtitle class="mb-4">{{__("Booked courses")}}</x-subtitle>
+                        <livewire:profile.booked-courses :bookings="$this->user->bookings" />
                     </section>
                     @if ($this->user->stripe_id)
                     <section class="" x-show="activeTab === 'credit-cards'">

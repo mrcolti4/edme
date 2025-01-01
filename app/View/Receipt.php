@@ -6,7 +6,7 @@ class Receipt
 {
     public function __construct(
         public readonly string $price,
-        public readonly string $date,
+        public readonly \DateTimeImmutable $date,
         public readonly string $method,
     ) {}
 
@@ -14,7 +14,7 @@ class Receipt
     {
         return [
             "price" => $this->price,
-            "date" => $this->date,
+            "date" => $this->date->format('d M H:i'),
             "method" => $this->method
         ];
     }

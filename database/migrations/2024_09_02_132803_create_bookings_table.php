@@ -18,6 +18,7 @@ return new class extends Migration
             $table->id();
             $table->string('status')->default('pending');
             $table->string('session_id');
+            $table->string('price');
             $table->foreignIdFor(User::class, "user_id");
             $table->foreignIdFor(Course::class);
             $table->timestamps();

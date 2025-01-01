@@ -19,6 +19,7 @@ class Booking extends Model
         'user_id',
         'course_id',
         'session_id',
+        'price',
         'status',
     ];
 }

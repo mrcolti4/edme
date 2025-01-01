@@ -10,7 +10,7 @@ interface StripeServiceInterface
 {
     public function createCheckoutSession(Course $course): Session;
     
-    public function validateCheckoutSession(string $sessionId): ?Receipt;
+    public function validateCheckoutSession(string $sessionId): ?array;
     
     public function getCustomerCards(string $customerId);
 }

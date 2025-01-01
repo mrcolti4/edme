@@ -9,7 +9,6 @@ use App\View\Receipt;
 use Stripe\Checkout\Session;
 use Stripe\Customer;
 use Stripe\PaymentIntent;
-use Stripe\PaymentMethod;
 use Stripe\Stripe;
 
 // TODO: save only one card after checkout, without duplicates
@@ -50,15 +49,12 @@ class StripeService implements StripeServiceInterface
         return $session;
     }
 
-    public function validateCheckoutSession(string $sessionId): ?Receipt
+    public function validateCheckoutSession(string $sessionId): ?array
     {
         $checkoutSession = Session::retrieve($sessionId);
         
         if ($checkoutSession->payment_status == 'paid') {
-            // Update status in DB
-            $booking = Booking::where('session_id', $sessionId)->first();
-            $booking->update(['status' => 'paid']);
-
+            $this->updateStatusInDb($sessionId);
             // Set default payment method
             Customer::update(
                 $checkoutSession->customer,
@@ -71,10 +67,10 @@ class StripeService implements StripeServiceInterface
 
             $receipt = new Receipt(
                 $paymentIntent->amount / 100,
-                (new \DateTimeImmutable($paymentIntent->created))->format('d M H:i'),
+                (new \DateTimeImmutable())->setTimestamp($paymentIntent->created),
                 $paymentIntent->payment_method,
             );
-            return $receipt;
+            return $receipt->render();
         } else {
             throw new PaymentFailed('Payment failed! Something went wrong.');
         }
@@ -87,5 +83,10 @@ class StripeService implements StripeServiceInterface
         $cards = $customer->default_source; 
 
         return $customer;
+    }
+
+    private function updateStatusInDb(string $sessionId): void {
+        $booking = Booking::where('session_id', $sessionId)->first();
+        $booking->update(['status' => 'paid']);
     }
 }
