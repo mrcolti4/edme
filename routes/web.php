@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BookController;
+use App\Http\Controllers\DownloadStripeReceiptController;
 use Illuminate\Support\Facades\Route;
 use App\Livewire\WelcomePage;
 use Livewire\Volt\Volt;
@@ -36,5 +37,9 @@ Route::group(
         Volt::route('/{course}', 'pages.app.booking.show')->name('show');
     }
 );
+
+Route::post('/receipt/download', DownloadStripeReceiptController::class)
+    ->name('receipt.download')
+    ->middleware('auth');
 
 require __DIR__ . '/auth.php';

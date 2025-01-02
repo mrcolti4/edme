@@ -2,20 +2,24 @@
 
 namespace App\View;
 
+use Stripe\StripeObject;
+
 class Receipt
 {
     public function __construct(
-        public readonly string $price,
+        public readonly string $courseId,
+        public readonly string $customerId,
         public readonly \DateTimeImmutable $date,
-        public readonly string $method,
+        public readonly StripeObject $card,
     ) {}
 
     public function render()
     {
         return [
-            "price" => $this->price,
+            "course_id" => $this->courseId,
+            "customer_id" => $this->customerId,
             "date" => $this->date->format('d M H:i'),
-            "method" => $this->method
+            "card" => $this->card->toArray()
         ];
     }
 }

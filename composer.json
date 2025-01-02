@@ -6,11 +6,13 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "laravel/cashier": "^15.6",
         "laravel/framework": "^11.9",
         "laravel/tinker": "^2.9",
         "livewire/livewire": "^3.4",
         "livewire/volt": "^1.0",
         "spatie/laravel-ignition": "^2.8",
+        "spatie/laravel-pdf": "*",
         "symfony/http-client": "^7.1",
         "symfony/mailgun-mailer": "^7.1",
         "wireui/breadcrumbs": "^3.1"

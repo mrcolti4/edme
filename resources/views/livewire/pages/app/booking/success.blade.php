@@ -44,18 +44,22 @@ new #[Layout("layouts.booking")] #[Title("You successfully paid for course")] cl
         <h2 class="text-center font-bold text-xl mb-5">{{__("Payment Details")}}</h2>
         <ul class="grid gap-4">
             <li class="flex items-center justify-between">
-                <p class="text-sm font-medium">{{__("Amount:")}}</p>
-                <p class="text-sm">${{$receipt['price']}}</p>
-            </li>
-            <li class="flex items-center justify-between">
                 <p class="text-sm font-medium">{{__("Date:")}}</p>
                 <p class="text-sm">{{$receipt['date']}}</p>
             </li>
             <li class="flex items-center justify-between">
-                <p class="text-sm font-medium">{{__("Payment Method:")}}</p>
-                <p class="text-sm">{{$receipt['method']}}</p>
+                <p class="text-sm font-medium">{{__("Card:")}}</p>
+                <p class="text-sm">**** **** **** {{$receipt['card']['last4']}}</p>
+            </li>
+            <li class="flex items-center justify-between">
+                <p class="text-sm font-medium">{{__("Brand:")}}</p>
+                <p class="text-sm">{{strtoupper($receipt['card']['brand'])}}</p>
             </li>
         </ul>
     </div>
     <x-button wire:click="showCourse" class="mt-8">{{__("Go to course")}}</x-button>
+    <x-form.form method="POST" action="{{route('receipt.download')}}">
+        <input type="hidden" name="receipt" value="{{json_encode($receipt)}}">
+        <x-button class="mt-8">{{__("Download receipt")}}</x-button>
+    </x-form.form>
 </div>

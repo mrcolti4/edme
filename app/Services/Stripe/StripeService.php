@@ -11,6 +11,7 @@ use Stripe\Customer;
 use Stripe\PaymentIntent;
 use Stripe\Stripe;
 use Stripe\Coupon;
+use Stripe\PaymentMethod;
 use Stripe\PromotionCode;
 
 // TODO: save only one card after checkout, without duplicates
@@ -67,10 +68,12 @@ class StripeService implements StripeServiceInterface
             // Get charge
             $paymentIntent = PaymentIntent::retrieve($checkoutSession->payment_intent);
 
+            $paymentMethod = PaymentMethod::retrieve($paymentIntent->payment_method);
             $receipt = new Receipt(
-                $paymentIntent->amount / 100,
-                (new \DateTimeImmutable())->setTimestamp($paymentIntent->created),
-                $paymentIntent->payment_method,
+                courseId: $checkoutSession->metadata['course_id'],
+                customerId: $checkoutSession->customer,
+                date: (new \DateTimeImmutable())->setTimestamp($paymentIntent->created),
+                card: $paymentMethod->card,
             );
             return $receipt->render();
         } else {
