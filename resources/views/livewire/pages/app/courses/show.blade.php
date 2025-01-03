@@ -87,7 +87,18 @@ new #[Layout('layouts.app')] #[Title('Course')] class extends Component {
         if (!auth()->check()) {
             return null;
         }
-        return $this->course->reviews->where('user_id', Auth::user()->id)->first();
+        return $this->course
+            ->reviews
+            ->where("user_id", Auth::user()->id)
+            ->first();
+    }
+
+    public function isUserBookedCourse(): bool
+    {
+        if (null === Auth::user()) {
+            return false;
+        }
+        return $this->course->bookings->where('user_id', Auth::user()->id)->isNotEmpty();
     }
 
     public function deleteReview()
@@ -183,47 +194,65 @@ new #[Layout('layouts.app')] #[Title('Course')] class extends Component {
                     @endcan
                     </>
                 </div>
-                <div class="relative w-2/6 p-8 bg-white">
-                    <div
-                        class="absolute top-0 px-6 py-3 text-2xl font-semibold leading-6 text-center text-white -translate-x-1/2 left-1/2 bg-secondary rounded-b-2xl">
-                        {{ $this->course->price }}$</div>
-                    <ul class="grid gap-4 mt-8">
-                        <x-courses.card-item>
-                            <x-courses.card-title>{{ __('Course dates') }}</x-courses.card-title>
-                            <x-courses.card-text>{{ $this->course->getCourseDates() }}</x-courses.card-text>
-                        </x-courses.card-item>
-                        <x-courses.card-item>
-                            <x-courses.card-title>{{ __('Seats left') }}</x-courses.card-title>
-                            <x-courses.card-text>{{ $this->course->studentsLeft() }}</x-courses.card-text>
-                        </x-courses.card-item>
-                        <x-courses.card-item class="pb-4 border-b border-b-light-gray">
-                            <x-courses.card-title>{{ __('Course duration') }}</x-courses.card-title>
-                            <x-courses.card-text>{{ $this->course->courseDuration() }}</x-courses.card-text>
-                        </x-courses.card-item>
-                        <li class="flex items-center gap-3 mt-3">
-                            <a href="{{ route('teachers.show', ['teacher' => $this->getTeacher()->id]) }}">
-                                <img src="{{ $this->getTeacherProfile()->avatar }}"
-                                    alt="{{ $this->getTeacher()->name }}" width="47" height="47"
-                                    class="rounded-full w-[47px] h-[47px]" />
-                            </a>
-                            <div class="grid gap-2">
-                                <a href="{{ route('teachers.show', ['teacher' => $this->getTeacher()->id]) }}"
-                                    class="text-lg font-semibold leading-5 transition text-primary hover:text-secondary">{{ $this->getTeacher()->name }}</a>
-                                <p class="text-text font-opensans">{{ __('Teacher') }}</p>
-                            </div>
-                        </li>
-                        <li class="mt-3">
-                            <x-button tag="a" isOutline="true"
-                                href="{{ route('booking.show', ['course' => $course]) }}">{{ __('Buy course') }}</x-button>
-                        </li>
-                    </ul>
-                </div>
             </div>
+            <div class="w-2/6 bg-white p-8 relative">
+                <div
+                    class="absolute top-0 left-1/2 -translate-x-1/2 px-6 py-3 bg-secondary rounded-b-2xl text-white text-2xl leading-6 font-semibold text-center">
+                    {{ $this->course->price }}$</div>
+                <ul class="grid gap-4 mt-8">
+                    <x-courses.card-item>
+                        <x-courses.card-title>{{ __('Course dates') }}</x-courses.card-title>
+                        <x-courses.card-text>{{ $this->course->getCourseDates() }}</x-courses.card-text>
+                    </x-courses.card-item>
+                    <x-courses.card-item>
+                        <x-courses.card-title>{{ __('Seats left') }}</x-courses.card-title>
+                        <x-courses.card-text>{{ $this->course->studentsLeft() }}</x-courses.card-text>
+                    </x-courses.card-item>
+                    <x-courses.card-item class="border-b border-b-light-gray pb-4">
+                        <x-courses.card-title>{{ __('Course duration') }}</x-courses.card-title>
+                        <x-courses.card-text>{{ $this->course->courseDuration() }}</x-courses.card-text>
+                    </x-courses.card-item>
+                    <li class="flex items-center gap-3 mt-3">
+                        <a href="{{ route('teachers.show', ['teacher'=> $this->getTeacher()->id]) }}">
+                            <img
+                                src="{{ $this->getTeacherProfile()->avatar }}"
+                                alt="{{ $this->getTeacher()->name }}"
+                                width="47"
+                                height="47"
+                                class="rounded-full w-[47px] h-[47px]"
+                            />
+                        </a>
+                        <div class="grid gap-2">
+                            <a href="{{ route('teachers.show', ['teacher'=> $this->getTeacher()->id]) }}" class="font-semibold text-primary text-lg leading-5 transition hover:text-secondary">{{ $this->getTeacher()->name }}</a>
+                            <p class="text-text font-opensans">{{__('Teacher')}}</p>
+                        </div>
+                    </li>
+                    <li class="mt-3">
+                        @if ($this->isUserBookedCourse())
+                            <div>
+                                {{__("You already booked this course")}}
+                            </div>
+                        @else
+                            <x-form.form method="POST" action="{{route('booking.book', ['course' => $course])}}">
+                                <x-button isOutline="true">
+                                    {{ __('Buy course') }}
+                                </x-button>
+                            </x-form.form>
+                        @endif
+                    </li>
+                </ul>
+            </div>
+        </div>
     </x-container>
     <!-- Flash messages -->
     @if (session('status'))
         <x-action-message status="success">
-            {{ session('status') }}
+            {{session("status")}}
+        </x-action-message>
+    @endif
+    @if(session('error'))
+        <x-action-message status="error">
+            {{session('error')}}
         </x-action-message>
     @endif
     <!-- Modal -->

@@ -19,9 +19,10 @@ class BookingFactory extends Factory
     public function definition(): array
     {
         return [
-            "student_id" => User::factory(),
+            "user_id" => User::factory(),
             "course_id" => Course::factory(),
-            "is_verified" => fake()->boolean()
+            "session_id" => fake()->uuid(),
+            "status" => fake()->randomElement(["pending", "completed", "cancelled"]),
         ];
     }
 }

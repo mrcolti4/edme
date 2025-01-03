@@ -19,6 +19,7 @@
         "@caneara/iodine": "^8.5.0",
         "@cycjimmy/swiper-animation": "^6.0.3",
         "animate.css": "^4.1.1",
+        "puppeteer": "^23.11.1",
         "swiper": "^11.1.12"
     }
 }

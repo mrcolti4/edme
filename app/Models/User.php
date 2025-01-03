@@ -35,6 +35,10 @@ class User extends Authenticatable
         return $this->where('role', 'teacher');
     }
 
+    public function bookings(): HasMany
+    {
+        return $this->hasMany(Booking::class);
+    }
     /**
      * The attributes that are mass assignable.
      *
