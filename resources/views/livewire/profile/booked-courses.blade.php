@@ -9,38 +9,51 @@
 <div x-data="{ activeFilter: 'created_at', orderByDirection: 'asc' }">
     @if ($bookings->count() > 0)
         <div class="flex justify-between items-center">
-            <div class="flex items-center border border-gray-300 rounded-xl bg-white mb-6">
+            <div class="flex items-center border border-gray-300 rounded-xl bg-white mb-6 gap-4 py-2 px-4">
                 @foreach (App\Enums\FilterBookings::cases() as $case)
-                    <button 
-                        wire:click="orderByFilter('{{ $case }}')" 
-                        @click="activeFilter = '{{ $case->value }}'" 
-                        :class="{ 'border-b-2 border-blue-500': activeFilter === '{{ $case->value }}' }" 
-                        class="px-4 py-2">
+                    <label for="{{ $case->value }}">
                         {{ $customButtonNames[$case->value] }}
-                    </button>
+                    </label>
+                    <input
+                        id="{{ $case->value }}"
+                        type="radio"
+                        wire:model="filter"
+                        wire:change="$refresh"
+                        value={{ $case }}
+                        @click="activeFilter = '{{ $case->value }}'"
+                        :class="{ 'border-blue-500': activeFilter === '{{ $case->value }}' }"
+                        />
                 @endforeach
             </div>
-            <div class="flex items-center border border-gray-300 rounded-xl bg-white mb-6">
-                <button 
-                    wire:click="orderByDirection('{{ App\Enums\Direction::DESC }}')" 
+            <div class="flex items-center border border-gray-300 rounded-xl bg-white mb-6 gap-4 py-2 px-4">
+                <label for="{{ App\Enums\Direction::DESC->value }}">
+                    {{__('High to Low')}}
+                </label>
+                <input 
+                    type="radio"
+                    wire:model="order"
+                    wire:change="$refresh"
+                    id="{{ App\Enums\Direction::DESC->value }}"
                     @click="orderByDirection = '{{ App\Enums\Direction::DESC->value }}'"
-                    class="px-4 py-2"
-                    :class="{ 'border-b-2 border-blue-500': orderByDirection === '{{ App\Enums\Direction::DESC->value }}' }"
-                >
-                    {{__('Low to high')}}
-                </button>
-                <button 
-                    wire:click="orderByDirection('{{ App\Enums\Direction::ASC }}')" 
+                    value={{ App\Enums\Direction::DESC->value }}
+                    :class="{ 'border-blue-500': orderByDirection === '{{ App\Enums\Direction::DESC->value }}' }"
+                />
+                <label for="{{ App\Enums\Direction::ASC->value }}">
+                    {{__('Low to High')}}
+                </label>
+                <input 
+                    type="radio"
+                    wire:model="order"
+                    wire:change="$refresh"
+                    id="{{ App\Enums\Direction::ASC->value }}"
                     @click="orderByDirection = '{{ App\Enums\Direction::ASC->value }}'"
-                    class="px-4 py-2"
+                    value={{ App\Enums\Direction::ASC->value }}
                     :class="{ 'border-b-2 border-blue-500': orderByDirection === '{{ App\Enums\Direction::ASC->value }}' }"
-                >
-                    {{__('High to low')}}
-                </button>
+                />
             </div>
         </div>
     @endif
-    <ul class="mt-6">
+    <ul class="my-6">
         @forelse ($bookings as $booking)
             <li class="mt-3 flex items-center justify-between">
                 <div class="flex items-center gap-3">
@@ -61,16 +74,18 @@
                             "bg-yellow-500" => $booking->status === 'pending',
                             "bg-secondary" => $booking->status === 'paid',
                             "bg-red-500" => $booking->status === 'cancelled',
+                            "bg-gray-500" => $booking->status === 'expired',
                         ])>
                             {{ $booking->status }}
                         </p>
                     </div>
                 </div>
             </li>
-        @empty
+            @empty
             <li class="mt-3">
                 {{__("You haven't booked any courses yet")}}
             </li>
-        @endforelse
+            @endforelse
     </ul>
+    {{ $bookings->links() }}
 </div>
