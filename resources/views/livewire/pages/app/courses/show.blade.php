@@ -6,6 +6,7 @@ use Livewire\Attributes\Title;
 use App\Livewire\Forms\ReviewForm;
 use App\Models\Course;
 use App\Models\Review;
+use App\Models\Booking;
 
 new #[Layout('layouts.app')] #[Title('Course')] class extends Component {
     public Course $course;
@@ -93,12 +94,39 @@ new #[Layout('layouts.app')] #[Title('Course')] class extends Component {
             ->first();
     }
 
+    public function getCurrentCourseBooking(): ?Booking
+    {
+        if (null === Auth::user()) {
+            return null;
+        }
+        return $this->course
+            ->bookings
+            ->where('user_id', Auth::user()->id)
+            ->first();
+    }
+
     public function isUserBookedCourse(): bool
     {
         if (null === Auth::user()) {
             return false;
         }
-        return $this->course->bookings->where('user_id', Auth::user()->id)->isNotEmpty();
+        return $this->course
+            ->bookings
+            ->where('user_id', Auth::user()->id)
+            ->where('status', 'paid')
+            ->isNotEmpty();
+    }
+
+    public function isUserBookingPending(): bool
+    {
+        if (null === Auth::user()) {
+            return false;
+        }
+        return $this->course
+            ->bookings
+            ->where('user_id', Auth::user()->id)
+            ->where('status', 'pending')
+            ->isNotEmpty();
     }
 
     public function deleteReview()
@@ -232,8 +260,17 @@ new #[Layout('layouts.app')] #[Title('Course')] class extends Component {
                             <div>
                                 {{__("You already booked this course")}}
                             </div>
+                        @elseif ($this->isUserBookingPending())
+                            <div>
+                                {{__("You have a pending booking for this course.")}}
+                                <a href="{{route('booking.resume', ['booking' => $this->getCurrentCourseBooking()])}}"
+                                    class="text-primary font-semibold hover:text-secondary transition">
+                                    {{__("Check your booking")}}
+                                </a>
+                            </div>
                         @else
                             <x-form.form method="POST" action="{{route('booking.book', ['course' => $course])}}">
+                                <x-form.input type="text" name="promotion_code" placeholder="Promotion code" />
                                 <x-button isOutline="true">
                                     {{ __('Buy course') }}
                                 </x-button>

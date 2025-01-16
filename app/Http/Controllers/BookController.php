@@ -7,6 +7,8 @@ use App\Models\Booking;
 use App\Models\Course;
 use App\Services\Stripe\StripeService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use App\Enums\Booking\Status;
 
 class BookController extends Controller
 {
@@ -25,8 +27,10 @@ class BookController extends Controller
             return back()->with("error", "You have already booked this course");
         }
         
-        $session = $this->stripeService->createCheckoutSession($course);
-
+        $session = match ($request->get('promotion_code')) {
+            null => $this->stripeService->createCheckoutSession($course),
+            default => $this->stripeService->createCheckoutSessionWithCoupon($course, $request->get('promotion_code')),
+        };
         // Book the course
         Booking::create([
             "user_id" => $request->user()->id,
@@ -49,5 +53,19 @@ class BookController extends Controller
         }
 
         return redirect(route("booking.success-page"))->with("receipt", json_encode($receipt));
+    }
+
+    public function resume(Request $request, Booking $booking)
+    {
+        $session = $this->stripeService->getCheckoutSessionById($booking->session_id);
+        if ($session->status === Status::EXPIRED->value) {
+            $booking->update([
+                'status' => Status::EXPIRED->value
+            ]);
+
+            return redirect()->back()->with("error", "Your booking has expired");
+        }
+
+        return redirect($session->url);
     }
 }

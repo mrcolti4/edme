@@ -60,9 +60,10 @@
                             "text-sm text-center text-white py-1 px-2 rounded-md",
                             "bg-yellow-500" => $booking->status === 'pending',
                             "bg-secondary" => $booking->status === 'paid',
-                            "bg-red-500" => $booking->status === 'canceled',
-                            ]) 
-                            >{{ $booking->status }}</p>
+                            "bg-red-500" => $booking->status === 'cancelled',
+                        ])>
+                            {{ $booking->status }}
+                        </p>
                     </div>
                 </div>
             </li>

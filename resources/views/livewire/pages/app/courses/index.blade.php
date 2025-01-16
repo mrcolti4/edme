@@ -7,11 +7,17 @@ use App\Models\Course;
 
 new #[Layout('layouts.app')] #[Title('Courses')] class extends Component {
     use WithPagination;
-    public $userBookedCourses = [];
+    public $userBookings = [];
 
     public function mount()
     {
-        $this->userBookedCourses = auth()->user()->bookings->pluck('course_id');
+        $bookings = auth()
+            ->user()
+            ->bookings()
+            ->get(['course_id', 'status'])
+            ->toArray();
+
+        $this->userBookings = array_column($bookings, 'status', 'course_id');
     }
 
     public function with()
@@ -25,7 +31,7 @@ new #[Layout('layouts.app')] #[Title('Courses')] class extends Component {
 
 <section>
     <x-container>
-        <x-courses.index :courses="$courses" :user-booked-courses="$userBookedCourses->toArray()" />
+        <x-courses.index :courses="$courses" :user-bookings="$userBookings" />
         {{ $courses->links() }}
     </x-container>
 </section>

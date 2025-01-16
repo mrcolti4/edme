@@ -9,6 +9,8 @@ use Stripe\Checkout\Session;
 interface StripeServiceInterface
 {
     public function createCheckoutSession(Course $course): Session;
+
+    public function getCheckoutSessionById(string $sessionId): Session;
     
     public function validateCheckoutSession(string $sessionId): ?array;
     
