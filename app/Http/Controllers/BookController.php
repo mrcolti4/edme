@@ -22,11 +22,27 @@ class BookController extends Controller
         if (Booking::where("course_id", $course->id)->count() === $course->students_limit) {
             return back()->with("error", "Course is full");
         }
+
+        // Check if user booking this course
+        if (
+            Booking::where("user_id", $request->user()->id)
+                ->where("course_id", $course->id)
+                ->where("status", Status::PENDING->value)
+                ->exists()
+        ) {
+            return back()->with("error", "You are already booking this course");
+        }
+
         // Check if user has already booked this course
-        if (Booking::where("user_id", $request->user()->id)->where("course_id", $course->id)->exists()) {
+        if (
+            Booking::where("user_id", $request->user()->id)
+                ->where("course_id", $course->id)
+                ->where("status", Status::PAID->value)
+                ->exists()
+        ) {
             return back()->with("error", "You have already booked this course");
         }
-        
+
         $session = match ($request->get('promotion_code')) {
             null => $this->stripeService->createCheckoutSession($course),
             default => $this->stripeService->createCheckoutSessionWithCoupon($course, $request->get('promotion_code')),
@@ -55,7 +71,7 @@ class BookController extends Controller
         return redirect(route("booking.success-page"))->with("receipt", json_encode($receipt));
     }
 
-    public function resume(Request $request, Booking $booking)
+    public function resume(Booking $booking)
     {
         $session = $this->stripeService->getCheckoutSessionById($booking->session_id);
         if ($session->status === Status::EXPIRED->value) {
