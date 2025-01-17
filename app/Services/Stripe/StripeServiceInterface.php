@@ -2,9 +2,10 @@
 
 namespace App\Services\Stripe;
 
+use App\DTOs\CreateCouponCommand;
 use App\Models\Course;
-use App\View\Receipt;
 use Stripe\Checkout\Session;
+use Stripe\Coupon;
 
 interface StripeServiceInterface
 {
@@ -18,5 +19,9 @@ interface StripeServiceInterface
 
     public function createPromotionCode(array $params): void;
 
-    public function createCoupon(array $params): void;
+    public function getPromotionCodeList(): array;
+
+    public function createCoupon(CreateCouponCommand $params): Coupon;
+
+    public function getCouponsList(): array;
 }

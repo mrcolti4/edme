@@ -2,11 +2,11 @@
 
 namespace App\Services\Stripe;
 
+use App\DTOs\CreateCouponCommand;
 use App\Exceptions\PaymentFailed;
 use App\Models\Booking;
 use App\Models\Course;
 use App\View\Receipt;
-use Illuminate\Support\Facades\Log;
 use Stripe\Checkout\Session;
 use Stripe\Customer;
 use Stripe\PaymentIntent;
@@ -16,7 +16,6 @@ use Stripe\PaymentMethod;
 use Stripe\PromotionCode;
 
 // TODO: save only one card after checkout, without duplicates
-// TODO: add expire to booking if not paid
 class StripeService implements StripeServiceInterface
 {
     public function __construct()
@@ -65,11 +64,9 @@ class StripeService implements StripeServiceInterface
         $codeId = '';
 
         if(null !== $code && '' !== $code) {
-            $codeId = PromotionCode::all(['code' => $code])->id;
+            $code = PromotionCode::all(['code' => $code])->first();
+            $codeId = $code['id'];
         }
-
-        Log::info($codeId);
-        Log::info($code);
 
         $session = Session::create([
             'line_items' => [
@@ -93,7 +90,9 @@ class StripeService implements StripeServiceInterface
             'cancel_url' => route('booking.cancel'),
             'metadata' => ['course_id' => $course->id, 'user_id' => auth()->id()],
             'discounts' => [
-                'promotion_code' => $codeId,
+                [
+                    'promotion_code' => $codeId
+                ],
             ]
         ]);
  
@@ -152,9 +151,33 @@ class StripeService implements StripeServiceInterface
         PromotionCode::create($params);
     }
 
-    public function createCoupon(array $params): void 
+    public function getPromotionCodeList(): array
     {
-        Coupon::create($params);
+        return PromotionCode::all()->data;
+    }
+
+    public function createCoupon(CreateCouponCommand $command): Coupon 
+    {
+        $data = [
+            "name" => $command->name,
+            "duration" => $command->duration->value,
+            "redeem_by" => $command->redeemByDate?->getTimestamp(),
+            "max_redemptions" => $command->redeemByCount,
+        ];
+
+        if($command->amountType->value === 'percent_off') {
+            $data['percent_off'] = $command->amountValue;
+        } else {
+            $data['amount_off'] = $command->amountValue * 100;
+            $data['currency'] = 'usd';
+        }
+
+        return Coupon::create($data);
+    }
+
+    public function getCouponsList(): array
+    {
+        return Coupon::all()->data;
     }
     private function updateStatusInDb(string $sessionId): void 
     {
