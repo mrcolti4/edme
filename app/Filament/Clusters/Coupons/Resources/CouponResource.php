@@ -16,6 +16,7 @@ use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Log;
 
@@ -31,18 +32,28 @@ class CouponResource extends Resource
     {
         return $form
             ->schema([
-                TextInput::make('name')->label('Name')->required(),
+                TextInput::make('name')
+                    ->label('Name')
+                    ->required(),
                 Radio::make('type')
                     ->options([
                         'percent_off' => 'Percentage discount',
                         'amount_off' => 'Fixed amount discount',
-                    ])->label('Type')->required(),
-                TextInput::make('amount')->label('Amount')->required(),
+                    ])
+                    ->label('Type')
+                    ->required()
+                    ->dehydrated(false),
+                TextInput::make('amount')
+                    ->label('Amount')
+                    ->required()
+                    ->dehydrated(false),
                 Select::make('duration')
                     ->options([
                         'forever' => 'Forever',
                         'once' => 'Once',
-                    ])->label('Duration')->required(),
+                    ])
+                    ->label('Duration')
+                    ->required(),
                 CheckboxList::make('redeem')
                     ->options([
                         'date' => 'Date',
@@ -53,13 +64,13 @@ class CouponResource extends Resource
                         'count' => 'Limit the total number of times this coupon can be redeemed',
                     ])
                     ->label('Redeem by')
-                    ->required()
-                    ->live(),
+                    ->live()
+                    ->dehydrated(false),
                 DatePicker::make('redeem_by')
                     ->label('Redeem by date')
                     ->hidden(fn (Get $get) => ! in_array('date', $get('redeem')))
                     ->required(),
-                TextInput::make('redeem_count')
+                TextInput::make('redeem_by_count')
                     ->label('Redeem by count')
                     ->hidden(fn (Get $get) => ! in_array('count', $get('redeem')))
                     ->required(),
@@ -71,7 +82,13 @@ class CouponResource extends Resource
     {
         return $table
             ->columns([
-                //
+                TextColumn::make('name'),
+                TextColumn::make('percent_off'),
+                TextColumn::make('amount_off'), 
+                TextColumn::make('duration'),
+                TextColumn::make('redeem_by'),
+                TextColumn::make('redeem_by_count'),
+                TextColumn::make('times_redeemed')
             ])
             ->filters([
                 //
@@ -99,6 +116,51 @@ class CouponResource extends Resource
             'index' => Pages\ListCoupons::route('/'),
             'create' => Pages\CreateCoupon::route('/create'),
             'edit' => Pages\EditCoupon::route('/{record}/edit'),
+        ];
+    }
+
+    public static function getCouponFormSchema(): array
+    {
+        return [
+            TextInput::make('name')
+                ->label('Name')
+                ->required(),
+            Radio::make('type')
+                ->options([
+                    'percent_off' => 'Percentage discount',
+                    'amount_off' => 'Fixed amount discount',
+                ])
+                ->label('Type')
+                ->required(),
+            TextInput::make('amount')
+                ->label('Amount')
+                ->required(),
+            Select::make('duration')
+                ->options([
+                    'forever' => 'Forever',
+                    'once' => 'Once',
+                ])
+                ->label('Duration')
+                ->required(),
+            CheckboxList::make('redeem')
+                ->options([
+                    'date' => 'Date',
+                    'count' => 'Count',
+                ])
+                ->descriptions([
+                    'date' => 'Limit the date range when customers can redeem this coupon',
+                    'count' => 'Limit the total number of times this coupon can be redeemed',
+                ])
+                ->label('Redeem by')
+                ->live(),
+            DatePicker::make('redeem_by')
+                ->label('Redeem by date')
+                ->hidden(fn (Get $get) => ! in_array('date', $get('redeem') ?? []))
+                ->required(),
+            TextInput::make('redeem_by_count')
+                ->label('Redeem by count')
+                ->hidden(fn (Get $get) => ! in_array('count', $get('redeem') ?? []))
+                ->required(),
         ];
     }
 }

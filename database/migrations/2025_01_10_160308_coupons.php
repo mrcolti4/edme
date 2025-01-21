@@ -16,7 +16,6 @@ return new class extends Migration
         Schema::create(self::TABLE, function (Blueprint $table) {
             $table->id();
             $table->string('stripe_id')->unique();
-            $table->string('code')->unique();
             $table->string('name')->unique();
             $table->integer('percent_off')->nullable();
             $table->integer('amount_off')->nullable();

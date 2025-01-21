@@ -17,11 +17,11 @@ return new class extends Migration
             $table->id();
             $table->string('stripe_id')->unique();
             $table->string('code')->unique();
-            $table->string('name')->unique();
             $table->integer('expires_at')->nullable();
             $table->integer('max_redemptions')->nullable();
             $table->integer('times_redeemed')->default(0);
-            $table->foreignIdFor(Coupon::class);
+            $table->foreignIdFor(Coupon::class)->constrained()->cascadeOnDelete();
+            $table->boolean('is_active')->default(0);
             $table->timestamps();
         });
     }

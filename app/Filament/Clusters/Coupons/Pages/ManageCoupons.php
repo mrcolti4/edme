@@ -18,7 +18,6 @@ use Filament\Tables\Table;
 
 class ManageCoupons extends Page implements HasForms, HasTable
 {
-    use InteractsWithForms;
     use InteractsWithTable;
     
     public StripeService $stripeService;
@@ -27,27 +26,6 @@ class ManageCoupons extends Page implements HasForms, HasTable
     protected static string $view = 'filament.clusters.coupons.pages.manage-coupons';
 
     protected static ?string $cluster = Coupons::class;
-    
-    public function getFormSchema(): array
-    {
-        return [
-            TextInput::make('name')->label('Name')->required(),
-            TextInput::make('code')->label('Code')->required(),
-        ];
-    }
-
-    public function getFormActions(): array
-    {
-        return [
-            Action::make('greet')
-            ->action(function () {
-                Notification::make()
-                    ->title(__('Hello ' . $this->name))
-                    ->success()
-                    ->send();
-            }),        
-        ];
-    }
 
     public function table(Table $table): Table
     {
@@ -55,7 +33,12 @@ class ManageCoupons extends Page implements HasForms, HasTable
             ->query(Coupon::query())
             ->columns([
                 TextColumn::make('name'),
-                TextColumn::make('code'),
+                TextColumn::make('percent_off'),
+                TextColumn::make('amount_off'), 
+                TextColumn::make('duration'),
+                TextColumn::make('redeem_by'),
+                TextColumn::make('redeem_by_count'),
+                TextColumn::make('times_redeemed')
             ]);
     }
 }

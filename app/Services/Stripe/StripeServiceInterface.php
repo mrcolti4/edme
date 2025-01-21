@@ -3,9 +3,11 @@
 namespace App\Services\Stripe;
 
 use App\DTOs\CreateCouponCommand;
+use App\DTOs\CreatePromoCodeCommand;
 use App\Models\Course;
 use Stripe\Checkout\Session;
 use Stripe\Coupon;
+use Stripe\PromotionCode;
 
 interface StripeServiceInterface
 {
@@ -17,7 +19,7 @@ interface StripeServiceInterface
     
     public function getCustomerCards(string $customerId);
 
-    public function createPromotionCode(array $params): void;
+    public function createPromotionCode(CreatePromoCodeCommand $command): PromotionCode;
 
     public function getPromotionCodeList(): array;
 

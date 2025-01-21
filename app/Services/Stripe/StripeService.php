@@ -3,6 +3,7 @@
 namespace App\Services\Stripe;
 
 use App\DTOs\CreateCouponCommand;
+use App\DTOs\CreatePromoCodeCommand;
 use App\Exceptions\PaymentFailed;
 use App\Models\Booking;
 use App\Models\Course;
@@ -137,18 +138,9 @@ class StripeService implements StripeServiceInterface
         return $customer;
     }
 
-    public function createPromotionCode(array $params): void 
-    {        
-        /*
-        For first time transaction for all users
-        [
-            'coupon' => $couponId,
-            'restrictions' => [
-                'first_time_transaction' => true
-            ]
-        ]
-        */
-        PromotionCode::create($params);
+    public function createPromotionCode(CreatePromoCodeCommand $command): PromotionCode 
+    {
+        return PromotionCode::create($command->toArray());
     }
 
     public function getPromotionCodeList(): array
