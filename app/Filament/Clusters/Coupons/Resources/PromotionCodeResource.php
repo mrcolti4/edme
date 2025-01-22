@@ -45,14 +45,18 @@ class PromotionCodeResource extends Resource
                     ->createOptionAction(
                         fn (Action $action) => CreateCoupon::createOptionAction($action)
                     )
-                    ->required(),
+                    ->required()
+                    ->hiddenOn('edit'),
                 TextInput::make('code')
                     ->label('Code')
-                    ->required(),
+                    ->required()
+                    ->hiddenOn('edit'),
                 DatePicker::make('expires_at')
-                    ->label('Expires at'),
+                    ->label('Expires at')
+                    ->hiddenOn('edit'),
                 TextInput::make('max_redemptions')
-                    ->label('Max redemptions'),
+                    ->label('Max redemptions')
+                    ->hiddenOn('edit'),
                 Fieldset::make('Restritions')
                     ->schema([
                         Checkbox::make('first_time_transaction')
@@ -61,7 +65,8 @@ class PromotionCodeResource extends Resource
                             ->label('Minimum amount'),
                     ])
                     ->columns(1)
-                    ->columnSpan(1),
+                    ->columnSpan(1)
+                    ->hiddenOn('edit'),
                 Checkbox::make('is_active')
                     ->label('Whether the promotion code is currently active.')
                     ->default(true),

@@ -5,8 +5,7 @@ namespace App\Filament\Clusters\Coupons\Resources;
 use App\Filament\Clusters\Coupons;
 use App\Filament\Clusters\Coupons\Resources\CouponResource\Pages;
 use App\Models\Coupon;
-use Filament\Forms\Components\Actions;
-use Filament\Forms\Components\Actions\Action;
+use App\Services\Stripe\StripeService;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
@@ -18,15 +17,20 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Support\Facades\Log;
 
 class CouponResource extends Resource
 {
+    protected StripeService $stripeService;
     protected static ?string $model = Coupon::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     protected static ?string $cluster = Coupons::class;
+
+    public function __construct()
+    {
+        $this->stripeService = app(StripeService::class);
+    }
 
     public static function form(Form $form): Form
     {
@@ -42,18 +46,21 @@ class CouponResource extends Resource
                     ])
                     ->label('Type')
                     ->required()
-                    ->dehydrated(false),
+                    ->dehydrated(false)
+                    ->hiddenOn('edit'),
                 TextInput::make('amount')
                     ->label('Amount')
                     ->required()
-                    ->dehydrated(false),
+                    ->dehydrated(false)
+                    ->hiddenOn('edit'),
                 Select::make('duration')
                     ->options([
                         'forever' => 'Forever',
                         'once' => 'Once',
                     ])
                     ->label('Duration')
-                    ->required(),
+                    ->required()
+                    ->hiddenOn('edit'),
                 CheckboxList::make('redeem')
                     ->options([
                         'date' => 'Date',
@@ -65,15 +72,18 @@ class CouponResource extends Resource
                     ])
                     ->label('Redeem by')
                     ->live()
-                    ->dehydrated(false),
+                    ->dehydrated(false)
+                    ->hiddenOn('edit'),
                 DatePicker::make('redeem_by')
                     ->label('Redeem by date')
                     ->hidden(fn (Get $get) => ! in_array('date', $get('redeem')))
-                    ->required(),
+                    ->required()
+                    ->hiddenOn('edit'),
                 TextInput::make('redeem_by_count')
                     ->label('Redeem by count')
                     ->hidden(fn (Get $get) => ! in_array('count', $get('redeem')))
-                    ->required(),
+                    ->required()
+                    ->hiddenOn('edit'),
             ])
             ->columns(1);
     }
@@ -95,11 +105,8 @@ class CouponResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                Tables\Actions\DeleteAction::make()
+                    ->before(fn ($record) => $this->stripeService->deleteCoupon($record->stripe_id)),
             ]);
     }
 

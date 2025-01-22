@@ -2,26 +2,18 @@
 
 namespace App\Services\Stripe;
 
-use App\DTOs\CreateCouponCommand;
-use App\DTOs\CreatePromoCodeCommand;
 use App\Exceptions\PaymentFailed;
 use App\Models\Booking;
 use App\Models\Course;
 use App\View\Receipt;
-use Stripe\Checkout\Session;
-use Stripe\Customer;
-use Stripe\PaymentIntent;
-use Stripe\Stripe;
-use Stripe\Coupon;
-use Stripe\PaymentMethod;
-use Stripe\PromotionCode;
+use App\DTOs\{CreateCouponCommand, CreatePromoCodeCommand, UpdateCouponCommand, UpdatePromoCodeCommand};
+use Stripe\{Checkout\Session, Coupon, Customer, PaymentIntent, PaymentMethod, PromotionCode, Stripe};
 
-// TODO: save only one card after checkout, without duplicates
 class StripeService implements StripeServiceInterface
 {
     public function __construct()
     {
-        Stripe::setApiKey(env('STRIPE_SECRET'));
+        Stripe::setApiKey(config('STRIPE_SECRET'));
     }
     public function createCheckoutSession(Course $course): Session   
     {
@@ -143,9 +135,9 @@ class StripeService implements StripeServiceInterface
         return PromotionCode::create($command->toArray());
     }
 
-    public function getPromotionCodeList(): array
+    public function updatePromotionCode(UpdatePromoCodeCommand $command): PromotionCode 
     {
-        return PromotionCode::all()->data;
+        return PromotionCode::update($command->id, $command->toArray());
     }
 
     public function createCoupon(CreateCouponCommand $command): Coupon 
@@ -167,11 +159,18 @@ class StripeService implements StripeServiceInterface
         return Coupon::create($data);
     }
 
-    public function getCouponsList(): array
+    public function updateCoupon(UpdateCouponCommand $command): Coupon
     {
-        return Coupon::all()->data;
+        return Coupon::update($command->id, $command->toArray());
     }
-    private function updateStatusInDb(string $sessionId): void 
+
+    public function deleteCoupon(string $couponId): void
+    {
+        $coupon = Coupon::retrieve($couponId);
+        $coupon->delete();
+    }
+
+    public function updateStatusInDb(string $sessionId): void 
     {
         $booking = Booking::where('session_id', $sessionId)->first();
         $booking->update(['status' => 'paid']);
