@@ -6,20 +6,14 @@ use App\Exceptions\PaymentFailed;
 use App\Models\Booking;
 use App\Models\Course;
 use App\View\Receipt;
-use Stripe\Checkout\Session;
-use Stripe\Customer;
-use Stripe\PaymentIntent;
-use Stripe\Stripe;
-use Stripe\Coupon;
-use Stripe\PaymentMethod;
-use Stripe\PromotionCode;
+use App\DTOs\{CreateCouponCommand, CreatePromoCodeCommand, UpdateCouponCommand, UpdatePromoCodeCommand};
+use Stripe\{Checkout\Session, Coupon, Customer, PaymentIntent, PaymentMethod, PromotionCode, Stripe};
 
-// TODO: save only one card after checkout, without duplicates
 class StripeService implements StripeServiceInterface
 {
     public function __construct()
     {
-        Stripe::setApiKey(env('STRIPE_SECRET'));
+        Stripe::setApiKey(config('STRIPE_SECRET'));
     }
     public function createCheckoutSession(Course $course): Session   
     {
@@ -27,28 +21,74 @@ class StripeService implements StripeServiceInterface
         $user->createOrGetStripeCustomer();
 
         $session = Session::create([
-            "line_items" => [
+            'line_items' => [
                 [
-                    "price_data" => [
-                        "currency" => "usd",
-                        "product_data" => [
-                            "name" => $course->name,
+                    'price_data' => [
+                        'currency' => 'usd',
+                        'product_data' => [
+                            'name' => $course->name,
                         ],
-                        "unit_amount" => $course->price * 100,
+                        'unit_amount' => $course->price * 100,
                     ],
-                    "quantity" => 1,
+                    'quantity' => 1,
                 ],
             ],
-            "mode" => "payment",
-            "customer" => $user->stripe_id,
-            "payment_intent_data" => [
-                "setup_future_usage" => "on_session",
+            'mode' => 'payment',
+            'customer' => $user->stripe_id,
+            'payment_intent_data' => [
+                'setup_future_usage' => 'on_session',
             ],
-            "success_url" => route("booking.success") . '?session_id={CHECKOUT_SESSION_ID}',
-            "cancel_url" => route("booking.cancel"),
+            'success_url' => route('booking.success') . '?session_id={CHECKOUT_SESSION_ID}',
+            'cancel_url' => route('booking.cancel'),
             'metadata' => ['course_id' => $course->id, 'user_id' => auth()->id()],
         ]);
 
+        return $session;
+    }
+
+    public function getCheckoutSessionById(string $sessionId): Session
+    {
+        return Session::retrieve($sessionId);
+    }
+    public function createCheckoutSessionWithCoupon(Course $course, string $code): Session 
+    {
+        $user = auth()->user();
+        $user->createOrGetStripeCustomer();
+        $codeId = '';
+
+        if(null !== $code && '' !== $code) {
+            $code = PromotionCode::all(['code' => $code])->first();
+            $codeId = $code['id'];
+        }
+
+        $session = Session::create([
+            'line_items' => [
+                [
+                    'price_data' => [
+                        'currency' => 'usd',
+                        'product_data' => [
+                            'name' => $course->name,
+                        ],
+                        'unit_amount' => $course->price * 100,
+                    ],
+                    'quantity' => 1,
+                ],
+            ],
+            'mode' => 'payment',
+            'customer' => $user->stripe_id,
+            'payment_intent_data' => [
+                'setup_future_usage' => 'on_session',
+            ],
+            'success_url' => route('booking.success') . '?session_id={CHECKOUT_SESSION_ID}',
+            'cancel_url' => route('booking.cancel'),
+            'metadata' => ['course_id' => $course->id, 'user_id' => auth()->id()],
+            'discounts' => [
+                [
+                    'promotion_code' => $codeId
+                ],
+            ]
+        ]);
+ 
         return $session;
     }
 
@@ -90,23 +130,48 @@ class StripeService implements StripeServiceInterface
         return $customer;
     }
 
-    public function createPromotionCode(array $params): void {        
-        /*
-        For first time transaction for all users
-        [
-            'coupon' => $couponId,
-            'restrictions' => [
-                'first_time_transaction' => true
-            ]
-        ]
-        */
-        PromotionCode::create($params);
+    public function createPromotionCode(CreatePromoCodeCommand $command): PromotionCode 
+    {
+        return PromotionCode::create($command->toArray());
     }
 
-    public function createCoupon(array $params): void {
-        Coupon::create($params);
+    public function updatePromotionCode(UpdatePromoCodeCommand $command): PromotionCode 
+    {
+        return PromotionCode::update($command->id, $command->toArray());
     }
-    private function updateStatusInDb(string $sessionId): void {
+
+    public function createCoupon(CreateCouponCommand $command): Coupon 
+    {
+        $data = [
+            "name" => $command->name,
+            "duration" => $command->duration->value,
+            "redeem_by" => $command->redeemByDate?->getTimestamp(),
+            "max_redemptions" => $command->redeemByCount,
+        ];
+
+        if($command->amountType->value === 'percent_off') {
+            $data['percent_off'] = $command->amountValue;
+        } else {
+            $data['amount_off'] = $command->amountValue * 100;
+            $data['currency'] = 'usd';
+        }
+
+        return Coupon::create($data);
+    }
+
+    public function updateCoupon(UpdateCouponCommand $command): Coupon
+    {
+        return Coupon::update($command->id, $command->toArray());
+    }
+
+    public function deleteCoupon(string $couponId): void
+    {
+        $coupon = Coupon::retrieve($couponId);
+        $coupon->delete();
+    }
+
+    public function updateStatusInDb(string $sessionId): void 
+    {
         $booking = Booking::where('session_id', $sessionId)->first();
         $booking->update(['status' => 'paid']);
     }

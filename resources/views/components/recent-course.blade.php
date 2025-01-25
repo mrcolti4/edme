@@ -1,4 +1,4 @@
-@props(['course' => [], 'isBooked' => false])
+@props(['course' => [], 'isBooked' => false, 'isPending' => false])
 
 <li>
     <div class="relative bg-white rounded-2xl text-left">
@@ -6,10 +6,11 @@
             @class([
                 'absolute top-0 left-0 bg-green text-white pt-2 pr-4 pb-2.5 pl-4.5 rounded-br-2xl rounded-tl-2xl text-2xl font-semibold leading-6',
                 'bg-red-500' => $isBooked,
-                'bg-green' => !$isBooked,
+                'bg-green' => !$isBooked && !$isPending,
+                'bg-yellow-500' => $isPending,
             ])
             >
-            {{ $isBooked ? 'PAID' : '$' . $course->price }}
+            {{ $isBooked ? 'PAID' : ($isPending ? 'PENDING' : '$' . $course->price) }}
         </div>
         <a href="{{ route('courses.show', $course) }}">
             <img alt="{{ $course->name }}" src="{{ $course->image }}" class="rounded-2xl" />
