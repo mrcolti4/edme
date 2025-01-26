@@ -5,28 +5,33 @@ namespace Tests\Feature;
 use App\Models\Course;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithoutMiddleware;
-use Illuminate\Support\Facades\Log;
 use Tests\TestCase;
 
 class BookControllerTest extends TestCase
 {
     use RefreshDatabase;
-    use WithoutMiddleware;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+    }
     /**
      * @test
      */
-    public function it_book_course()
+    public function user_can_book_course()
     {
+        $this->mockStripe();
         $user = User::factory()->create();
         $course = Course::factory()->create();
-        $response = $this->actingAs($user)->post(route('booking.book', $course));
-
+        $session = json_decode(file_get_contents('tests/Mock/responses/checkous_session.json'), true);
+        $response = $this->actingAs($user)
+            ->post(route('booking.book', ['course' => $course]), $session);
+        
         $this->assertDatabaseHas('bookings', [
             'user_id' => $user->id,
             'course_id' => $course->id,
         ]);
 
-        $response->assertRedirect(route('booking.success-page'));
+        $response->assertRedirect($session['url']);
     }
 }

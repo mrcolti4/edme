@@ -18,6 +18,9 @@ class BookController extends Controller
 
     public function book(Request $request, Course $course)
     {
+        if ($course->id === null) {
+            return back()->with("error", "Course not found");
+        }
         // Check if course is full
         if (Booking::where("course_id", $course->id)->count() === $course->students_limit) {
             return back()->with("error", "Course is full");
@@ -51,11 +54,12 @@ class BookController extends Controller
         Booking::create([
             "user_id" => $request->user()->id,
             "course_id" => $course->id,
-            "session_id" => $session->id,
+            "session_id" => $session['id'],
             "price" => $course->price,
             "status" => "pending",
         ]);
-        return redirect($session->url);
+
+        return redirect($session['url']);
     }
 
     public function checkoutSuccess(Request $request)

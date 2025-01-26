@@ -13,7 +13,9 @@ use Stripe\PromotionCode;
 
 interface StripeServiceInterface
 {
-    public function createCheckoutSession(Course $course): Session;
+    public function createCheckoutSession(Course $course): array;
+
+    public function createCheckoutSessionWithCoupon(Course $course, string $code): array;
 
     public function getCheckoutSessionById(string $sessionId): Session;
     

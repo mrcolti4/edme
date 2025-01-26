@@ -5,6 +5,9 @@ namespace Tests;
 use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Facades\Artisan;
+use Stripe\ApiRequestor;
+use Stripe\Stripe;
+use Tests\Mock\StripeClientMock;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -15,6 +18,11 @@ abstract class TestCase extends BaseTestCase
         $app->make(Kernel::class)->bootstrap();
 
         return $app;
+    }
+
+    public function mockStripe()
+    {
+        ApiRequestor::setHttpClient(new StripeClientMock());
     }
 
     protected function setUp(): void
