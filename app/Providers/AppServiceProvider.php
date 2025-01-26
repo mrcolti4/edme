@@ -24,7 +24,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Stripe::setApiKey(config('services.stripe.secret'));
+        Stripe::setApiKey(config('cashier.secret'));
         Cashier::useCustomerModel(User::class);
         VerifyEmail::toMailUsing(function (object $notifiable, string $url) {
             return (new MailMessage)

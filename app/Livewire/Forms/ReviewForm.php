@@ -2,10 +2,9 @@
 
 namespace App\Livewire\Forms;
 
-use App\Models\Course;
 use App\Models\Review;
 use App\Services\Review\ReviewInterface;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Validate;
 use Livewire\Form;
@@ -13,18 +12,20 @@ use Livewire\Form;
 class ReviewForm extends Form implements ReviewInterface
 {
     public ?Review $review;
-    public Course $course;
 
     #[Validate('required|numeric|min:1|max:5')]
-    public int $rating;
+    public ?int $rating;
 
     #[Validate('required|string|min:50|max:500')]
-    public string $comment;
+    public ?string $comment;
 
-    public function getReviewByUserId(Course $course)
+    #[Validate('required|exists:courses,id')]
+    public ?int $course_id;
+
+    public function getReviewByUserId()
     {
-        return $course->reviews()->where('user_id', Auth::user()->id);
-    }
+        return Review::where('course_id', $this->course_id)
+            ->where('user_id', Auth::user()->id);    }
 
     public function setReview(Review $review)
     {
@@ -33,41 +34,42 @@ class ReviewForm extends Form implements ReviewInterface
         $this->rating = $review->rating;
 
         $this->comment = $review->comment;
-
-        $this->course = $review->course;
     }
 
-    public function store(object $data, Course $course): void
+    public function store(): ?RedirectResponse
     {
-        if ($this->getReviewByUserId($course)->exists()) {
-            // TODO: implement error handling for single review per course from single user;
-            return;
+        $this->validate();
+
+        if ($this->getReviewByUserId()->exists()) {
+            return redirect()->back()->with("error", "You have already submitted a review for this course");
         }
-        $review = Review::updateOrCreate([
-            'course_id' => $course->id,
+        
+        Review::updateOrCreate([
+            'course_id' => $this->course_id,
             'user_id' => auth()->user()->id,
-            'rating' => $data->rating,
-            'comment' => $data->comment,
+            'rating' => $this->rating,
+            'comment' => $this->comment,
         ]);
-
+        return null;
     }
 
-    public function update($data): void
+    public function update(): ?RedirectResponse
     {
         if ($this->review === null) {
-            // TODO: implement error handling if review not found
-            return;
+            return redirect()->back()->with("error", "Review not found");
         }
-        $this->review->update($data);
+        $this->review->update($this->only(['rating', 'comment']));
+
+        return null;
     }
 
-    public function destroy(): void
+    public function destroy(): ?RedirectResponse
     {
         if ($this->review === null) {
-            dd("nulled");
-            // TODO: implement error handling if review not found
-            return;
+            return redirect()->back()->with("error", "Review not found");
         }
         $this->review->delete();
+
+        return null;
     }
 }

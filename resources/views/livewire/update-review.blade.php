@@ -10,6 +10,11 @@ new class extends Component {
     public bool $isEditing = false;
     public ReviewForm $form;
 
+    public function mount(Review $review)
+    {
+        $this->form->setReview($review);
+    }
+
     public function showForm()
     {
         $this->isEditing = true;

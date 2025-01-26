@@ -2,14 +2,13 @@
 
 namespace App\Services\Review;
 
-use App\Http\Requests\ReviewRequest;
-use App\Models\Course;
+use Illuminate\Http\RedirectResponse;
 
 interface ReviewInterface
 {
-    public function store(object $data, Course $course): void;
+    public function store(): ?RedirectResponse;
 
-    public function update(array $data): void;
+    public function update(): ?RedirectResponse;
 
-    public function destroy(): void;
+    public function destroy(): ?RedirectResponse;
 }

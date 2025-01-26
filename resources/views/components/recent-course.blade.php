@@ -1,6 +1,6 @@
 @props(['course' => [], 'isBooked' => false, 'isPending' => false])
 
-<li>
+<li wire:key="{{$course->id}}">
     <div class="relative bg-white rounded-2xl text-left">
         <div
             @class([
