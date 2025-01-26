@@ -21,31 +21,32 @@ class CourseResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
-                    ->required(),
+                    ->required(fn (string $operation): bool => $operation === 'create'),
                 Forms\Components\TextInput::make('description')
-                    ->required(),
+                    ->required(fn (string $operation): bool => $operation === 'create'),
                 Forms\Components\FileUpload::make('image')
                     ->disk('s3')
+                    ->preserveFilenames()
                     ->directory('course-posters')
                     ->image()
-                    ->required(),
+                    ->required(fn (string $operation): bool => $operation === 'create'),
                 Forms\Components\TextInput::make('price')
                     ->required()
                     ->numeric()
                     ->prefix('$'),
                 Forms\Components\TextInput::make('students_limit')
-                    ->required()
+                    ->required(fn (string $operation): bool => $operation === 'create')
                     ->numeric(),
                 Forms\Components\DatePicker::make('start_date')
-                    ->required(),
+                    ->required(fn (string $operation): bool => $operation === 'create'),
                 Forms\Components\DatePicker::make('end_date')
-                    ->required(),
+                    ->required(fn (string $operation): bool => $operation === 'create'),
                 Forms\Components\Select::make('teacher_id')
                     ->relationship('teacher', 'name')
-                    ->required(),
+                ->required(fn (string $operation): bool => $operation === 'create'),
                 Forms\Components\Select::make('category_id')
                     ->relationship('category', 'name')
-                    ->required(),
+                    ->required(fn (string $operation): bool => $operation === 'create'),
             ]);
     }
 
