@@ -13,9 +13,9 @@ class StripeService implements StripeServiceInterface
 {
     public function __construct()
     {
-        Stripe::setApiKey(config('STRIPE_SECRET'));
+        Stripe::setApiKey(config('cashier.secret'));
     }
-    public function createCheckoutSession(Course $course): Session   
+    public function createCheckoutSession(Course $course): array   
     {
         $user = auth()->user();
         $user->createOrGetStripeCustomer();
@@ -43,15 +43,19 @@ class StripeService implements StripeServiceInterface
             'metadata' => ['course_id' => $course->id, 'user_id' => auth()->id()],
         ]);
 
-        return $session;
+        return [
+            'id' => $session['id'],
+            'url' => $session['url'],
+        ];
     }
 
     public function getCheckoutSessionById(string $sessionId): Session
     {
         return Session::retrieve($sessionId);
     }
-    public function createCheckoutSessionWithCoupon(Course $course, string $code): Session 
+    public function createCheckoutSessionWithCoupon(Course $course, string $code): array 
     {
+        var_dump('test');
         $user = auth()->user();
         $user->createOrGetStripeCustomer();
         $codeId = '';
@@ -89,7 +93,10 @@ class StripeService implements StripeServiceInterface
             ]
         ]);
  
-        return $session;
+        return [
+            'id' => $session['id'],
+            'url' => $session['url'],
+        ];
     }
 
     public function validateCheckoutSession(string $sessionId): ?array

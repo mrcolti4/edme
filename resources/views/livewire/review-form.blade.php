@@ -1,6 +1,5 @@
 <?php
 
-use Livewire\Attributes\On;
 use Livewire\Volt\Component;
 use App\Livewire\Forms\ReviewForm;
 use App\Models\User;
@@ -14,26 +13,21 @@ new class extends Component {
     public ReviewForm $form;
     public ?int $rating = null;
 
-    public function mount()
+    public function mount(Review $review)
     {
-        $this->form = new ReviewForm($this, "");
-        $this->form->rating = 0;
-        if ($this->review !== null) {
-            $this->rating = $this->review->rating;
-            $this->form->setReview($this->review);
-        }
+        $this->form->setReview($review);
     }
 
     public function store()
     {
-        $this->form->store((object) $this->validate(), $this->course);
+        $this->form->store();
 
         $this->dispatch("review-event", message: "You did create review for this course!");
     }
 
     public function update()
     {
-        $this->form->update($this->validate());
+        $this->form->update();
 
         $this->dispatch("review-event", message: "You successfully updated your review!");
     }
@@ -63,6 +57,7 @@ new class extends Component {
             {{$this->review->comment ?? ''}}
         </x-form.textarea>
         @error('form.comment') <span class="text-red-500">{{ $message }}</span> @enderror
-    </x-form>
+    </x-form.label>
+    <x-form.input hidden name="course_id" wire:model="form.course_id" value="{{$course->id}}" />
     <x-button type="submit" wire:loading.attr="disabled" class="w-[300px]">{{__("Submit your review")}}</x-button>
 </form>
