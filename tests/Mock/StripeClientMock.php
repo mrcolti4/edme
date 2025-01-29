@@ -32,6 +32,10 @@ class StripeClientMock implements ClientInterface
         if (strtolower($method) === 'post' && \preg_match('/^https:\/\/api\.stripe\.com\/v1\/promotion_codes\/[a-zA-Z0-9_]+$/', $absUrl)) {
             $this->rbody = file_get_contents('tests/Mock/responses/promotion_code.json');
         }
+        if (strtolower($method) === 'post' && \preg_match('/https:\/\/api\.stripe\.com\/v1\/coupons\/(cup_[a-zA-Z0-9\-]+)/', $absUrl)) {
+            $this->rbody = file_get_contents('tests/Mock/responses/coupon.json');
+        }
+
 
         return [
             $this->rbody,

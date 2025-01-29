@@ -73,16 +73,17 @@ class CouponResource extends Resource
                     ->label('Redeem by')
                     ->live()
                     ->dehydrated(false)
+                    ->live(onBlur: true)
                     ->hiddenOn('edit'),
                 DatePicker::make('redeem_by')
                     ->label('Redeem by date')
                     ->hidden(fn (Get $get) => ! in_array('date', $get('redeem')))
-                    ->required()
+                    ->required(fn (Get $get) => filled($get('redeem')))
                     ->hiddenOn('edit'),
                 TextInput::make('redeem_by_count')
                     ->label('Redeem by count')
                     ->hidden(fn (Get $get) => ! in_array('count', $get('redeem')))
-                    ->required()
+                    ->required(fn (Get $get) => filled($get('redeem')))
                     ->hiddenOn('edit'),
             ])
             ->columns(1);

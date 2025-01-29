@@ -4,11 +4,8 @@ namespace Tests\Feature\Filament\PromoCodes;
 
 use App\Filament\Clusters\Coupons\Resources\PromotionCodeResource;
 use App\Models\Coupon;
-use App\Models\PromoCode;
 use App\Models\PromotionCode;
 use App\Models\User;
-use Filament\Actions\DeleteAction;
-use Filament\Facades\Filament;
 use Livewire\Livewire;
 use Tests\TestCase;
 
